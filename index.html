@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ôn tập KHTN 9 – Hoá · Vật lý · Sinh</title>
+<style>
+:root{
+  --bg:#f4f6fb; --card:#ffffff; --ink:#1c2333; --sub:#5b6478;
+  --line:#e3e7f0; --acc:#4f46e5; --acc2:#6366f1;
+  --ok:#16a34a; --okbg:#dcfce7; --bad:#dc2626; --badbg:#fee2e2;
+  --chipdl:#0ea5e9; --chipls:#f59e0b; --shadow:0 4px 18px rgba(28,35,51,.08);
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#11141c; --card:#1a1f2b; --ink:#e8ebf3; --sub:#98a1b5;
+    --line:#2a3140; --okbg:#12301d; --badbg:#3a1518; --shadow:0 4px 18px rgba(0,0,0,.4); }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;padding-bottom:60px}
+header{background:linear-gradient(135deg,var(--acc),#7c3aed);color:#fff;padding:26px 16px 22px;text-align:center}
+header h1{font-size:1.35rem;font-weight:800;letter-spacing:.2px}
+header p{opacity:.85;font-size:.88rem;margin-top:4px}
+.tabs{display:flex;gap:8px;justify-content:center;margin:-18px auto 0;max-width:820px;padding:0 12px;position:relative;z-index:2}
+.tabs button{flex:1;max-width:280px;padding:11px 14px;border:0;border-radius:12px;background:var(--card);color:var(--ink);font-size:.95rem;font-weight:700;cursor:pointer;box-shadow:var(--shadow);transition:.15s}
+.tabs button.on{background:var(--acc);color:#fff}
+main{max-width:820px;margin:18px auto 0;padding:0 12px}
+.panel{display:none}.panel.on{display:block}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--sub);padding:7px 13px;border-radius:999px;font-size:.83rem;font-weight:700;cursor:pointer;transition:.15s}
+.chip.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.spacer{flex:1}
+.stat{font-size:.85rem;color:var(--sub);font-weight:700}
+.bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin-bottom:14px}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc),#7c3aed);transition:.3s}
+.qcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 18px;box-shadow:var(--shadow)}
+.qtop{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+.tag{font-size:.72rem;font-weight:800;padding:3px 9px;border-radius:99px;color:#fff}
+.tag.h{background:#0ea5e9}.tag.v{background:#f59e0b}.tag.s{background:#16a34a}
+.num{font-size:.78rem;color:var(--sub);font-weight:700}
+.qq{font-size:1.03rem;font-weight:700;margin-bottom:14px}
+.opts{display:grid;gap:9px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;padding:11px 13px;border:1.5px solid var(--line);border-radius:12px;background:transparent;color:var(--ink);font-size:.93rem;cursor:pointer;transition:.15s;font-family:inherit;line-height:1.45}
+.opt:hover:not(:disabled){border-color:var(--acc2);background:rgba(99,102,241,.06)}
+.opt b{min-width:20px;color:var(--acc2)}
+.opt:disabled{cursor:default;opacity:.92}
+.opt.correct{border-color:var(--ok);background:var(--okbg)}
+.opt.correct b{color:var(--ok)}
+.opt.wrong{border-color:var(--bad);background:var(--badbg)}
+.opt.wrong b{color:var(--bad)}
+.verdict{margin-top:12px;font-size:.9rem;font-weight:700;min-height:1.3em}
+.verdict.ok{color:var(--ok)}.verdict.no{color:var(--bad)}
+.nav{display:flex;gap:8px;margin-top:16px}
+.nav button{flex:1;padding:11px;border:0;border-radius:12px;font-size:.92rem;font-weight:700;cursor:pointer;background:var(--line);color:var(--ink);transition:.15s}
+.nav button.primary{background:var(--acc);color:#fff}
+.nav button:hover{filter:brightness(1.06)}
+.keywrap{margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow)}
+.keywrap h3{font-size:.92rem;margin-bottom:10px}
+.keygrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:6px}
+.kb{border:1px solid var(--line);border-radius:9px;padding:6px 0;text-align:center;font-size:.8rem;font-weight:800;background:transparent;color:var(--ink);cursor:pointer}
+.kb span{display:block;font-size:.72rem;color:var(--sub);font-weight:600}
+.kb:hover{border-color:var(--acc)}
+details.keywrap summary{cursor:pointer;font-weight:700;font-size:.92rem;list-style:none}
+details.keywrap summary::-webkit-details-marker{display:none}
+details.keywrap[open] summary{margin-bottom:10px}
+.essay{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:10px;box-shadow:var(--shadow);overflow:hidden}
+.essay summary{cursor:pointer;padding:15px 16px;font-weight:700;font-size:.95rem;list-style:none;display:flex;gap:9px;align-items:flex-start}
+.essay summary::-webkit-details-marker{display:none}
+.essay summary::after{content:"+";margin-left:auto;font-weight:800;color:var(--acc2);font-size:1.1rem}
+.essay[open] summary::after{content:"\2212"}
+.essay .body{padding:0 16px 16px;font-size:.9rem;color:var(--ink)}
+.essay .body h4{font-size:.82rem;color:var(--sub);text-transform:uppercase;letter-spacing:.5px;margin:10px 0 5px}
+.essay .body ul{padding-left:20px;display:grid;gap:5px}
+.essay .body li::marker{color:var(--acc2)}
+.tip{margin-top:10px;background:rgba(99,102,241,.08);border-left:3px solid var(--acc2);padding:8px 11px;border-radius:0 9px 9px 0;font-size:.86rem}
+.hint{font-size:.83rem;color:var(--sub);text-align:center;margin-top:14px}
+.essaybar{display:flex;gap:8px;margin-bottom:12px}
+.essaybar button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:7px 13px;border-radius:999px;font-size:.83rem;font-weight:700;cursor:pointer}
+/* icons */
+.ic{width:1em;height:1em;display:inline-block;flex:none;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.13em}
+.tabs button{display:flex;align-items:center;justify-content:center;gap:7px}
+.chip{display:inline-flex;align-items:center;gap:6px}
+.nav button{display:flex;align-items:center;justify-content:center;gap:6px}
+details.keywrap summary{display:flex;align-items:center;justify-content:space-between;gap:8px}
+details.keywrap summary .rl{display:flex;align-items:center;gap:8px}
+.cv{transition:transform .2s}
+details[open] .cv{transform:rotate(180deg)}
+
+.flash{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);perspective:1400px;cursor:pointer}
+.fin{position:relative;min-height:260px;transform-style:preserve-3d;transition:transform .55s}
+.flash.flip .fin{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:16px;padding:20px 18px;overflow:auto;display:flex;flex-direction:column;justify-content:center}
+.face.front{background:var(--card);color:var(--ink)}
+.face.back{transform:rotateY(180deg);background:linear-gradient(135deg,var(--acc),#7c3aed);color:#fff}
+.face.back .k{display:grid;gap:7px;font-size:.9rem}
+.face.back .k li{list-style:none;padding-left:18px;position:relative;line-height:1.45}
+.face.back .k li::before{content:"\25B8";position:absolute;left:0;color:#fde68a}
+.ftip{margin-top:13px;background:rgba(255,255,255,.16);border-radius:9px;padding:8px 11px;font-size:.84rem;font-weight:700}
+.ftitle{font-size:.76rem;font-weight:800;letter-spacing:.6px;opacity:.75;margin-bottom:8px}
+.fq{font-size:1.08rem;font-weight:800;line-height:1.4}
+.fhint{font-size:.8rem;opacity:.7;margin-top:16px;text-align:center}
+.qgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.qmini{border:1px solid var(--line);background:var(--card);border-radius:13px;padding:13px;cursor:pointer;transition:.15s;box-shadow:var(--shadow);text-align:left;font-family:inherit;color:var(--ink)}
+.qmini:hover{border-color:var(--acc2);transform:translateY(-2px)}
+.qmini.on{border-color:var(--acc);box-shadow:0 0 0 2px rgba(79,70,229,.25)}
+.qmini h5{font-size:.84rem;margin:7px 0;line-height:1.4}
+.qmini ul{padding-left:16px;display:grid;gap:3px;font-size:.77rem;color:var(--sub);line-height:1.45}
+.qmini .mtip{font-size:.75rem;color:var(--acc2);font-weight:800;margin-top:8px;line-height:1.4}
+.qh3{font-size:.95rem;margin:22px 0 10px;display:flex;align-items:center;gap:8px}
+.qh3::after{content:"";flex:1;height:1px;background:var(--line)}
+
+.flagbtn{border:0;background:none;color:var(--sub);cursor:pointer;padding:3px 5px;border-radius:8px;line-height:1}
+.flagbtn:hover{background:var(--line)}
+.flagbtn svg{width:1.2em;height:1.2em}
+.flagbtn.on{color:#f59e0b}
+.flagbtn.on svg{fill:currentColor}
+.expl{display:none;margin-top:11px;font-size:.87rem;color:var(--sub);background:rgba(99,102,241,.07);border:1px dashed var(--line);border-radius:10px;padding:9px 12px;line-height:1.55}
+.expl.show{display:block}
+.expl b{color:var(--ink)}
+.mockbar{display:none;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.mockbar.show{display:flex}
+.mtime{font-family:ui-monospace,Consolas,monospace;font-weight:800;font-size:1.02rem;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 14px;box-shadow:var(--shadow);letter-spacing:1px}
+.mtime.danger{color:#ef4444;border-color:#ef4444;animation:pulse1 1.1s infinite}
+@keyframes pulse1{50%{opacity:.55}}
+.btn-primary{border:0;background:var(--acc);color:#fff;font-weight:800;font-size:.9rem;padding:10px 22px;border-radius:11px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-family:inherit}
+.btn-primary:hover{filter:brightness(1.07)}
+.result{text-align:center;padding:8px 2px}
+.rtitle{font-weight:800;font-size:1rem;margin-bottom:10px}
+.rscore{font-size:2.7rem;font-weight:900;background:linear-gradient(135deg,var(--acc),#7c3aed);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1.1}
+.rsub{color:var(--sub);font-size:.9rem;font-weight:700;margin-top:7px}
+.rlist{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:16px}
+.rlist .rb{border:1px solid var(--bad);color:var(--bad);background:var(--badbg);border-radius:9px;padding:5px 11px;font-size:.83rem;font-weight:800;cursor:pointer;font-family:inherit}
+.rlist .rb:hover{filter:brightness(1.06)}
+@media(max-width:480px){header h1{font-size:1.15rem}.qq{font-size:.97rem}.fin{min-height:300px}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8M13 12h8M13 18h8"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></symbol>
+  <symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></symbol>
+  <symbol id="i-shuffle" viewBox="0 0 24 24"><path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="m15 15 6 6"/><path d="m4 4 5 5"/></symbol>
+  <symbol id="i-swap" viewBox="0 0 24 24"><path d="M4 8h13l-3.5-3.5"/><path d="M20 16H7l3.5 3.5"/></symbol>
+  <symbol id="i-reset" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/><path d="M3 3v5h5"/></symbol>
+  <symbol id="i-cl" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+  <symbol id="i-cr" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="i-cd" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-flip" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3"/><path d="M16 3h3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-3"/><path d="M12 20v2M12 14v2M12 8v2M12 2v2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M15 14c.2-1 .7-1.7 1.5-2.5A5.8 5.8 0 0 0 18 8a6 6 0 0 0-12 0c0 1.4.5 2.6 1.5 3.5.8.8 1.3 1.5 1.5 2.5"/><path d="M9 18h6M10 22h4"/></symbol>
+  <symbol id="i-listnum" viewBox="0 0 24 24"><path d="M10 6h11M10 12h11M10 18h11"/><path d="M4 4h1v4"/><path d="M4 20a1.5 1.5 0 0 1-2-1.5c0-1 2-2.5 2-2.5h2"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 2.5 2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3 1.1-6.5L2.6 9.3l6.5-.9z"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></symbol>
+</svg>
+
+<header>
+  <h1>Ôn tập KHTN 9 – Hoá · Vật lý · Sinh</h1>
+</header>
+
+<div class="tabs">
+  <button id="tab-q" class="on" onclick="showTab('q')"><svg class="ic"><use href="#i-list"/></svg>Trắc nghiệm</button>
+  <button id="tab-e" onclick="showTab('e')"><svg class="ic"><use href="#i-book"/></svg>Tự luận</button>
+  <button id="tab-k" onclick="showTab('k')"><svg class="ic"><use href="#i-zap"/></svg>Học nhanh</button>
+</div>
+
+<main>
+
+<section id="panel-q" class="panel on">
+  <div class="toolbar" id="toolbar">
+    <button class="chip on" data-f="all" onclick="setFilter('all')">Tất cả (64)</button>
+    <button class="chip" data-f="h" onclick="setFilter('h')">Hoá (37)</button>
+    <button class="chip" data-f="v" onclick="setFilter('v')">Vật lý (15)</button>
+    <button class="chip" data-f="s" onclick="setFilter('s')">Sinh (12)</button>
+    <button class="chip" id="chipFlag" style="display:none" onclick="setFilter('flag')"><svg class="ic"><use href="#i-star"/></svg>Chưa chắc</button>
+    <button class="chip" id="chipWrong" style="display:none" onclick="setFilter('wrong')"><svg class="ic"><use href="#i-x"/></svg>Làm sai</button>
+    <span class="spacer"></span>
+    <button class="chip" onclick="startMock()"><svg class="ic"><use href="#i-clock"/></svg>Thi thử 45′</button>
+    <button class="chip" onclick="shuffle()"><svg class="ic"><use href="#i-shuffle"/></svg>Trộn câu</button>
+    <button class="chip" id="chipShuf" onclick="toggleShuf()"><svg class="ic"><use href="#i-swap"/></svg>Trộn đáp án</button>
+    <button class="chip" onclick="resetQuiz()"><svg class="ic"><use href="#i-reset"/></svg>Làm lại</button>
+  </div>
+
+  <div class="mockbar" id="mockbar">
+    <div class="mtime" id="mockTime">45:00</div>
+    <button class="chip" onclick="exitMock()"><svg class="ic"><use href="#i-x"/></svg>Thoát</button>
+    <button class="btn-primary" onclick="submitMock()">Nộp bài</button>
+  </div>
+
+  <div class="bar"><i id="bar"></i></div>
+  <div class="stat" id="stat" style="margin-bottom:10px"></div>
+
+  <div class="qcard" id="qcard">
+    <div class="qtop">
+      <span class="tag" id="tag"></span>
+      <span class="num" id="num"></span>
+      <span class="spacer"></span>
+      <button class="flagbtn" id="flagbtn" onclick="toggleFlag()" title="Đánh dấu câu chưa chắc"><svg class="ic"><use href="#i-star"/></svg></button>
+      <span class="num" id="pos"></span>
+    </div>
+    <div class="qq" id="qq"></div>
+    <div class="opts" id="opts"></div>
+    <div class="verdict" id="verdict"></div>
+    <div class="expl" id="expl"></div>
+    <div class="nav">
+      <button onclick="move(-1)"><svg class="ic"><use href="#i-cl"/></svg>Trước</button>
+      <button class="primary" onclick="move(1)">Tiếp<svg class="ic"><use href="#i-cr"/></svg></button>
+    </div>
+  </div>
+
+  <details class="keywrap" id="keybox">
+    <summary><span class="rl"><svg class="ic"><use href="#i-listnum"/></svg>Xem nhanh bảng đáp án (nhấn để mở)</span><svg class="ic cv"><use href="#i-cd"/></svg></summary>
+    <div class="keygrid" id="keygrid"></div>
+  </details>
+
+  <p class="hint" id="qhint">Chọn đáp án → hiện đúng/sai ngay. Tiến độ được lưu tự động trên máy.</p>
+</section>
+
+<section id="panel-e" class="panel">
+  <div class="essaybar">
+    <button onclick="allEssay(true)">Mở tất cả</button>
+    <button onclick="allEssay(false)">Đóng tất cả</button>
+  </div>
+  <div id="elist"></div>
+  <p class="hint">Đề bài + đáp án đầy đủ theo gạch đầu dòng – mở/đóng từng câu, ghi nhớ theo số đếm (xem tab <svg class="ic"><use href="#i-zap"/></svg> Học nhanh).</p>
+</section>
+
+<section id="panel-k" class="panel">
+  <div class="stat" id="fstat" style="margin-bottom:10px"></div>
+
+  <div class="flash" id="flash" onclick="flip()">
+    <div class="fin" id="fin">
+      <div class="face front" id="ffront"></div>
+      <div class="face back" id="fback"></div>
+    </div>
+  </div>
+  <div class="nav" style="margin-top:12px">
+    <button onclick="fmove(-1)"><svg class="ic"><use href="#i-cl"/></svg>Trước</button>
+    <button class="primary" onclick="flip()"><svg class="ic"><use href="#i-flip"/></svg>Lật thẻ</button>
+    <button onclick="fmove(1)">Sau<svg class="ic"><use href="#i-cr"/></svg></button>
+  </div>
+
+  <div class="qh3">Bảng nhớ nhanh – 36 câu tự luận</div>
+  <div class="qgrid" id="qgrid"></div>
+
+  <p class="hint">Nhấn thẻ để lật giữa <b>câu hỏi ↔ từ khóa trả lời</b>. Dòng <svg class="ic"><use href="#i-bulb"/></svg> ở mặt sau là mẹo ghi nhớ theo số đếm.</p>
+</section>
+
+</main>
+
+<script>
+const Q = [
+{n:1,k:1,c:"H1",p:"h",q:"Câu 1. Hãy nêu các tính chất vật lý chung của kim loại.",o:["Dẫn điện, dẫn nhiệt tốt, có ánh kim.","Không dẫn điện, không dẫn nhiệt, không có ánh kim.","Dễ bay hơi, mềm và không có ánh kim.","Không dẫn điện nhưng dẫn nhiệt tốt."],a:0,e:""},
+{n:2,k:2,c:"H2",p:"h",q:"Câu 2: Sản phẩm tạo thành từ phản ứng của kim loại với khí oxygen thuộc loại nào sau đây?",o:["oxide acid.","oxide base.","acid.","muối."],a:1,e:""},
+{n:3,k:3,c:"H3",p:"h",q:"Câu 3: Ở điều kiện thường, kim loại nào sau đây tác dụng được với H<span class=\"sub\">2</span>O?",o:["Cu.","Fe.","Na","Ag."],a:2,e:""},
+{n:4,k:4,c:"H4",p:"h",q:"Câu 4. Ở nhiệt độ cao, hơi nước tác dụng với kim loại sắt tạo ra khí hydrogen và chất nào sau đây?",o:["FeO.","Fe<span class=\"sub\">2</span>O<span class=\"sub\">3</span>.","Fe<span class=\"sub\">3</span>O<span class=\"sub\">4</span>.","Fe(OH)<span class=\"sub\">2</span>."],a:2,e:""},
+{n:5,k:5,c:"H5",p:"h",q:"Câu 5. Nhôm và sắt đều có thể phản ứng với oxygen trong những điều kiện thích hợp. Tuy nhiên, đồ vật bằng nhôm thường được bảo vệ bởi một lớp oxide bám chắc trên bề mặt, còn đồ vật bằng sắt có thể bị gỉ trong không khí ẩm. Nguyên nhân nào sau đây giải thích đúng hiện tượng này?",o:["nhôm không phản ứng với oxygen, còn sắt luôn phản ứng với nước.","lớp aluminium oxide (Al<span class=\"sub\">2</span>O<span class=\"sub\">3</span>) bám chắc, hạn chế sự tiếp xúc của nhôm với môi trường; lớp gi sắt thường không bảo vệ tốt phần sắt bên trong.","sắt không phản ứng với oxygen, còn nhôm dễ bị hòa tan trong nước.","nhôm và sắt đều không phản ứng với oxygen nhưng có màu sắc khác nhau."],a:1,e:""},
+{n:6,k:6,c:"H6",p:"h",q:"Câu 6. Bạn An cho một mẫu magnesium (Mg) vào ống nghiệm chứa dung dịch hydrochloric acid (HCl) loãng. Hiện tượng bạn An quan sát được là",o:["không có hiện tượng gì xảy ra.","có bọt khí thoát ra, mẫu Mg tan dần.","xuất hiện chất rắn màu đỏ bám trên mẫu Mg.","dung dịch chuyển sang màu xanh lam."],a:1,e:""},
+{n:7,k:7,c:"H7",p:"h",q:"Câu 7. Một học sinh thực hiện thí nghiệm cho hai mẫu kim loại zinc (Zn) và copper (Cu) có kích thước tương đương vào hai ống nghiệm riêng biệt, mỗi ống chứa dung dịch HCl loãng. Kết quả nào sau đây là phù hợp?",o:["Cả hai kim loại đều sùi bọt khí mạnh như nhau.","Zn có bọt khí thoát ra, còn Cu không có hiện tượng rõ rệt.","Cu có bọt khí thoát ra, còn Zn không có hiện tượng rõ rệt.","Cả hai kim loại đều không phản ứng với HCl."],a:1,e:""},
+{n:8,k:8,c:"H8",p:"h",q:"Câu 8. Bạn học sinh B cần lựa chọn kim loại để thực hiện thí nghiệm so sánh phản ứng với dung dịch HCl loãng. Để quan sát hiện tượng rõ ràng nhưng không sử dụng kim loại phản ứng quá mạnh liệt. Cặp kim loại nào sau đây phù hợp nhất?",o:["Sodium (Na) và potassium (K).","Magnesium (Mg) và zinc (Zn).","Silver (Ag) và copper (Cu).","Gold (Au) và silver (Ag)."],a:1,e:""},
+{n:9,k:9,c:"H9",p:"h",q:"Câu 9. Bạn A cho một mẫu sodium (Na) nhỏ vào cốc nước. Hiện tượng nào sau đây có thể quan sát được?",o:["Sodium chìm xuống đáy cốc, không có bọt khí thoát ra.","Sodium phản ứng mạnh với nước, chuyển động trên mặt nước và có khí thoát ra.","Sodium tan trong nước nhưng không xảy ra phản ứng hóa học.","Sodium không thay đổi vì không phản ứng với nước ở nhiệt độ thường."],a:1,e:""},
+{n:10,k:10,c:"H10",p:"h",q:"Câu 10. Bạn An cho một mẫu magnesium (Mg) vào ống nghiệm chứa dung dịch hydrochloric acid (HCl) loãng. Hiện tượng bạn An quan sát được là",o:["không có hiện tượng gì xảy ra.","có bọt khí thoát ra, mẫu Mg tan dần.","xuất hiện chất rắn màu đỏ bám trên mẫu Mg.","dung dịch chuyển sang màu xanh lam."],a:1,e:""},
+{n:11,k:11,c:"H11",p:"h",q:"Câu 11. Một học sinh thực hiện thí nghiệm cho hai mẫu kim loại zinc (Zn) và copper (Cu) có kích thước tương đương vào hai ống nghiệm riêng biệt, mỗi ống chứa dung dịch HCl loãng. Kết quả nào sau đây là phù hợp?",o:["Cả hai kim loại đều sùi bọt khí mạnh như nhau.","Zn có bọt khí thoát ra, còn Cu không có hiện tượng rõ rệt.","Cu có bọt khí thoát ra, còn Zn không có hiện tượng rõ rệt.","Cả hai kim loại đều không phản ứng với HCl."],a:1,e:""},
+{n:12,k:12,c:"H12",p:"h",q:"Câu 12. Bạn học sinh B cần lựa chọn kim loại để thực hiện thí nghiệm so sánh phản ứng với dung dịch HCl loãng. Để quan sát hiện tượng rõ ràng nhưng không sử dụng kim loại phản ứng quá mạnh liệt. Cặp kim loại nào sau đây phù hợp nhất?",o:["Sodium (Na) và potassium (K).","Magnesium (Mg) và zinc (Zn).","Silver (Ag) và copper (Cu).","Gold (Au) và silver (Ag)."],a:1,e:""},
+{n:13,k:13,c:"H13",p:"h",q:"Câu 13. Bạn A cho một mẫu sodium (Na) nhỏ vào cốc nước. Hiện tượng nào sau đây có thể quan sát được?",o:["Sodium chìm xuống đáy cốc, không có bọt khí thoát ra.","Sodium phản ứng mạnh với nước, chuyển động trên mặt nước và có khí thoát ra.","Sodium tan trong nước nhưng không xảy ra phản ứng hóa học.","Sodium không thay đổi vì không phản ứng với nước ở nhiệt độ thường."],a:1,e:""},
+{n:14,k:14,c:"H14",p:"h",q:"Câu 14. Một học sinh cho hai mẫu kim loại magnesium (Mg) và copper (Cu) lần lượt vào hai ống nghiệm chứa dung dịch hydrochloric acid loãng. Kết quả nào sau đây đúng?",o:["Cả Mg và Cu đều có khí hydrogen thoát ra.","Chỉ có Cu phản ứng và giải phóng khí hydrogen.","Mg phản ứng, có bọt khí hydrogen thoát ra; Cu không phản ứng với dung dịch HCl loãng.","Cả Mg và Cu đều không phản ứng với dung dịch HCl loãng."],a:2,e:""},
+{n:15,k:15,c:"H15",p:"h",q:"Câu 15. Một học sinh muốn so sánh khả năng phản ứng của iron (Fe) và copper (Cu) với dung dịch hydrochloric acid loãng. Cách tiến hành nào sau đây phù hợp nhất để so sánh kết quả?",o:["Dùng hai mẫu kim loại có kích thước tương đương, cho vào hai ống nghiệm chứa cùng thể tích và nồng độ dung dịch HCl, rồi quan sát hiện tượng.","Cho Fe vào nước và Cu vào dung dịch HCl, sau đó so sánh lượng khí thoát ra.","Cho Fe vào dung dịch HCl đặc, Cu vào dung dịch HCl loãng rồi so sánh tốc độ phản ứng.","Cho đồng thời Fe và Cu vào cùng một ống nghiệm chứa dung dịch HCl, không cần phân biệt hiện tượng ở từng kim loại."],a:0,e:""},
+{n:16,k:16,c:"H16",p:"h",q:"Câu 16. Cho ba kim loại Mg, Zn và Cu lần lượt vào ba ống nghiệm chứa cùng thể tích dung dịch HCl loãng, cùng nồng độ và ở cùng nhiệt độ. Dự đoán nào sau đây đúng?",o:["Cả ba kim loại đều phản ứng với HCl và giải phóng hydrogen.","Mg và Zn phản ứng giải phóng hydrogen; Cu không phản ứng với HCl loãng.","Chỉ có Cu phản ứng với HCl loãng.","Chỉ có Zn phản ứng với HCl loãng."],a:1,e:""},
+{n:17,k:17,c:"H17",p:"h",q:"Câu 17: Dây nào sau đây được sắp xếp đúng theo chiều giảm dần mức độ hoạt động hóa học của kim loại?",o:["K, Na, Ca, Mg, Al, Zn, Fe, Pb, Cu, H, Ag, Au.","K, Na, Ca, Mg, Al, Zn, Fe, Pb, H, Cu, Ag, Au.","Na, K, Ca, Mg, Al, Fe, Zn, Pb, H, Cu, Ag, Au.","K, Ca, Na, Mg, Al, Zn, Fe, Pb, H, Ag, Cu, Au."],a:1,e:""},
+{n:18,k:18,c:"H18",p:"h",q:"Câu 18. Cho các kim loại sau: Fe, Cu, Zn, Ag. Thứ tự sắp xếp các kim loại trong dây hoạt động hóa học là là:",o:["Cu &gt; Fe &gt; Zn &gt; Ag.","Ag &gt; Cu &gt; Fe &gt; Zn.","Zn &gt; Fe &gt; Cu &gt; Ag.","Fe &gt; Zn &gt; Cu &gt; Ag."],a:2,e:""},
+{n:19,k:19,c:"H19",p:"h",q:"Câu 19. Cho các kim loại sau: Mg, Al, Zn, Fe, Cu. Kim loại đứng ngay trước đồng (Cu) trong dây hoạt động hóa học là:",o:["Al.","Zn.","Fe.","Mg."],a:2,e:""},
+{n:20,k:20,c:"H20",p:"h",q:"Câu 20. Trong dây hoạt động hóa học của kim loại, các kim loại được sắp xếp theo nguyên tắc nào?",o:["mức độ hoạt động hóa học tăng dần.","mức độ hoạt động hóa học giảm dần.","khối lượng mol tăng dần.","khối lượng mol giảm dần."],a:1,e:""},
+{n:21,k:21,c:"H21",p:"h",q:"Câu 21. Theo dây hoạt động hóa học của kim loại, kim loại nào sau đây đứng trước kim loại sắt (Fe)?",o:["Ag (Siliver).","Cu (Copper).","Au (Gold).","Zn (Zinc)."],a:3,e:""},
+{n:22,k:22,c:"H22",p:"h",q:"Câu 22. Trong dây hoạt động hóa học của kim loại, vị trí của kim loại Hidro (H) nằm ở giữa hai kim loại nào sau đây?",o:["Iron (Fe) và Copper (Cu).","Zinc (Zn) và Iron (Fe).","Copper (Cu) và Siliver (Ag).","Sodium (Na) và Magnesium (Mg)."],a:0,e:""},
+{n:23,k:23,c:"H23",p:"h",q:"Câu 23. Trong dây hoạt động hóa học của kim loại, kim loại đứng trước magnesium (Mg) là potassium (K). Điều này cho biết điều gì?",o:["K hoạt động hóa học yếu hơn Mg.","K hoạt động hóa học mạnh hơn Mg.","K có khối lượng riêng nhỏ hơn Mg trong mọi điều kiện.","K có nhiệt độ nóng chảy cao hơn Mg trong mọi điều kiện."],a:1,e:""},
+{n:24,k:24,c:"H24",p:"h",q:"Câu 24: Dựa vào dây hoạt động hóa học của kim loại, phát biểu nào sau đây đúng?",o:["Kim loại đứng sau hydrogen đều phản ứng mạnh với dung dịch hydrochloric acid (HCl).","Kim loại đứng trước hydrogen có thể phản ứng với một số dung dịch acid giải phóng khí hydrogen.","Kim loại đứng sau kim loại khác luôn đẩy được kim loại đó ra khỏi dung dịch muối.","Mọi kim loại đều phản ứng với nước ở nhiệt độ thường."],a:1,e:""},
+{n:25,k:25,c:"H25",p:"h",q:"Câu 25: Phương pháp thường dùng để tách các kim loại hoạt động hóa học mạnh như potassium (K), sodium (Na), calcium (Ca) khỏi hợp chất của chúng là",o:["Nhiệt luyện.","Thủy luyện.","Điện phân nóng chảy.","Dùng carbon khử oxide kim loại."],a:2,e:""},
+{n:26,k:26,c:"H26",p:"h",q:"Câu 26: Phương pháp thường dùng để tách các kim loại hoạt động hóa học trung bình như zinc (Zn), iron (Fe) khỏi oxide của chúng là",o:["Nhiệt luyện.","Điện phân dung dịch.","Chung cát.","Lọc."],a:0,e:""},
+{n:27,k:27,c:"H27",p:"h",q:"Câu 27: Nhôm (Aluminium) được điều chế bằng phương pháp điện phân nóng chảy aluminium oxide, còn kẽm (zinc) được điều chế từ quặng Zinc sunfur qua các giai đoạn nung quặng trong oxygen để tạo zinc oxide, sau đó khử zinc oxide bằng carbon ở nhiệt độ cao.<br>Sự khác nhau về phương pháp tách hai kim loại này là",o:["Nhôm và kẽm đều được tách bằng cách khử oxit kim loại bằng carbon.","Nhôm được tách bằng điện phân nóng chảy, còn kẽm được tách bằng phương pháp nhiệt luyện.","Nhôm được tách bằng phương pháp nhiệt luyện, còn kẽm được tách bằng điện phân nóng chảy.","Nhôm và kẽm đều được tách trực tiếp từ quặng bằng cách nung trong oxygen."],a:1,e:""},
+{n:28,k:28,c:"H28",p:"h",q:"Câu 28: Hợp kim là gì?",o:["Chất được tạo thành từ một kim loại duy nhất.","Vật liệu kim loại chứa một kim loại cơ bản và một số kim loại hoặc phi kim khác.","Hỗn hợp gồm nhiều phi kim khác nhau.","Hợp chất được tạo thành từ hai hay nhiều phi kim."],a:1,e:""},
+{n:29,k:29,c:"H29",p:"h",q:"Câu 29: Vì sao các hợp kim gang, thép và Đuy-ra được sử dụng phổ biến trong công nghiệp và đời sống?",o:["Vì các hợp kim này đều có khối lượng riêng nhỏ, mềm và dễ nóng chảy hơn các kim loại tạo nên chúng.","Vì các hợp kim này có tính chất phù hợp với nhiều mục đích sử dụng như độ cứng, độ bền cao hoặc khối lượng riêng nhỏ.","Vì các hợp kim này đều có khả năng chống ăn mòn tuyệt đối và không bị biến đổi trong môi trường tự nhiên.","Vì các hợp kim này đều dẫn điện, dẫn nhiệt tốt hơn tất cả các kim loại nguyên chất."],a:1,e:""},
+{n:30,k:30,c:"H30",p:"h",q:"Câu 30: Gang là hợp kim của sắt với carbon và một số nguyên tố khác, trong đó hàm lượng carbon chiếm khoảng:",o:["dưới 2%","từ 2% đến 5%","trên 6%","từ 10% đến 15%"],a:1,e:""},
+{n:31,k:31,c:"H31",p:"h",q:"Câu 31: Thép là hợp kim của sắt với carbon và một số nguyên tố khác, trong đó hàm lượng carbon là:",o:["dưới 2%","từ 2% đến 5%","từ 6% đến 8%","trên 10%."],a:0,e:""},
+{n:32,k:32,c:"H32",p:"h",q:"Câu 32: Trong lò cao, quặng chứa iron(III) oxide được dùng để sản xuất gang. Khí carbon monoxide (CO) được tạo ra trong lò cao có vai trò gì trong quá trình này?",o:["Oxi hóa iron(III) oxide thành iron (sắt).","Khử iron(III) oxide thành iron (sắt).","Làm giảm nhiệt độ nóng chảy của iron(III) oxide.","Chuyển iron (sắt) thành iron(III) oxide."],a:1,e:""},
+{n:33,k:33,c:"H33",p:"h",q:"Câu 33: Trong quá trình sản xuất thép từ gang lỏng, người ta thổi khí oxygen vào lò đựng gang nóng chảy. Mục đích chính của giai đoạn này là:",o:["làm tăng hàm lượng carbon trong gang để tạo thép.","làm nguội gang lỏng để thép đúc đặc nhanh hơn.","oxi hóa bớt carbon và một số tạp chất trong gang để thu được thép có thành phần phù hợp.","Chuyển toàn bộ sắt trong gang thành iron(III) oxide."],a:2,e:""},
+{n:34,k:34,c:"H34",p:"h",q:"Câu 34: Lưu huỳnh được sử dụng trong công nghiệp để sản xuất chất nào sau đây?",o:["Sulfuric acid.","Khí oxygen.","Khí nitrogen.","Kim loại nhôm."],a:0,e:""},
+{n:35,k:35,c:"H35",p:"h",q:"Câu 35. Khí chlorine được ứng dụng trong đời sống chủ yếu để",o:["làm nhiên liệu cho động cơ.","sản xuất phân bón nitrogen trực tiếp.","khử trùng nước và tẩy trắng vải.","sản xuất nhựa P.V.C."],a:2,e:""},
+{n:36,k:36,c:"H36",p:"h",q:"Câu 36: Ứng dụng nào sau đây phù hợp với tính chất của than hoạt tính?",o:["Chế tạo đồ trang sức nhờ độ cứng cao.","Hấp phụ chất màu, mùi và một số chất độc trong nước hoặc không khí.","Sản xuất phân bón nhờ khả năng cung cấp nitrogen.","Khử trùng nước sinh hoạt nhờ khả năng oxi hóa mạnh."],a:1,e:""},
+{n:37,k:37,c:"H37",p:"h",q:"Câu 37: Phát biểu nào sau đây không đúng khi nói về sự khác biệt giữa kim loại và phi kim?",o:["Hầu hết kim loại dẫn điện và dẫn nhiệt tốt, trong khi phần lớn phi kim không dẫn điện hoặc dẫn điện rất kém.","Kim loại có ánh kim, còn phi kim thì không có ánh kim","Nhiệt độ nóng chảy và khối lượng riêng của phần lớn phi kim nhỏ hơn so với kim loại.","Tất cả các phi kim đều tồn tại ở thể khí ở điều kiện thường."],a:3,e:""},
+{n:38,k:1,c:"V1",p:"v",q:"Câu 1. Trong bộ thí nghiệm quang học môn KHTN 9, dụng cụ nào sau đây dùng để hội tụ hoặc phân kỳ chùm tia sáng truyền qua nó?",o:["Màn chắn.","Thấu kính.","Giá quang học.","Nguồn sáng."],a:1,e:""},
+{n:39,k:2,c:"V2",p:"v",q:"Câu 2. Khi quan sát nhãn dán trên các chai, lọ đựng hoá chất trong phòng thí nghiệm môn KHTN, thông tin nào sau đây <b>bắt buộc</b> phải có để nhận biết hoá chất và sử dụng an toàn?",o:["Tên hoá chất, công thức hoá học và các ký hiệu cảnh báo nguy hiểm.","Giá bán lẻ của hoá chất trên thị trường.","Tên của người trực tiếp mua lọ hoá chất đó.","Địa chỉ nhà riêng của người sản xuất hoá chất."],a:0,e:""},
+{n:40,k:3,c:"V3",p:"v",q:"Câu 3. Động năng của một vật khối lượng <i>m</i> đang chuyển động với vận tốc <i>v</i> được tính theo công thức nào sau đây?",o:["W<span class=\"sub\">đ</span> = m · v","W<span class=\"sub\">đ</span> = ½ m · v<span class=\"sup\">2</span>","W<span class=\"sub\">đ</span> = m · v<span class=\"sup\">2</span>","W<span class=\"sub\">đ</span> = ½ m · v"],a:1,e:""},
+{n:41,k:4,c:"V4",p:"v",q:"Câu 4. Cơ năng của một vật chuyển động trong trọng trường là:",o:["Tổng động năng và thế năng của vật.","Hiệu giữa động năng và thế năng của vật.","Tích của động năng và thế năng của vật.","Thương số giữa thế năng và động năng của vật."],a:0,e:""},
+{n:42,k:5,c:"V5",p:"v",q:"Câu 5. Hai vật A và B có cùng khối lượng đặt ở hai vị trí khác nhau so với mặt đất. Biết vị trí của vật A có độ cao lớn gấp đôi vị trí của vật B (h<span class=\"sub\">A</span> = 2h<span class=\"sub\">B</span>). Chọn mốc thế năng tại mặt đất, thế năng trọng trường của hai vật thỏa mãn:",o:["W<span class=\"sub\">tA</span> = W<span class=\"sub\">tB</span>","W<span class=\"sub\">tB</span> = 2W<span class=\"sub\">tA</span>","W<span class=\"sub\">tA</span> = 2W<span class=\"sub\">tB</span>","W<span class=\"sub\">tA</span> = 4W<span class=\"sub\">tB</span>"],a:2,e:""},
+{n:43,k:6,c:"V6",p:"v",q:"Câu 6. Trong quá trình một quả táo rụng từ trên cành cây rơi tự do xuống mặt đất (bỏ qua sức cản không khí), sự chuyển hóa năng lượng diễn ra như thế nào?",o:["Động năng tăng dần, thế năng giảm dần.","Động năng giảm dần, thế năng tăng dần.","Cả động năng và thế năng đều tăng.","Cả động năng và thế năng đều không đổi."],a:0,e:""},
+{n:44,k:8,c:"V8",p:"v",q:"Câu 8. Một vận động viên chạy bộ có khối lượng m = 60kg đang chạy đều với tốc độ v = 4m/s. Động năng của vận động viên đó là:",o:["240J.","480J.","960J.","120J."],a:1,e:""},
+{n:45,k:10,c:"V10",p:"v",q:"Câu 10. Trong hệ thống đo lường quốc tế (SI), đơn vị đo của công suất là gì?",o:["Jun (J).","Oát (W).","Niutôn (N).","Jun trên giây (J/s)."],a:1,e:""},
+{n:46,k:12,c:"V12",p:"v",q:"Câu 12. Trường hợp nào sau đây lực tác dụng không thực hiện công cơ học?",o:["Lực kéo của con ngựa làm chiếc xe chuyển động trên đường.","Trọng lực tác dụng làm quả bưởi rơi từ trên cây xuống đất.","Lực đẩy của một người tác dụng vào bức tường bê tông nhưng bức tường không di chuyển.","Lực kéo của động cơ thang máy đưa buồng thang máy lên tầng cao."],a:2,e:""},
+{n:47,k:13,c:"V13",p:"v",q:"Câu 13. Một máy nâng thứ nhất thực hiện được công 1000J trong thời gian 10s. Một máy nâng thứ hai thực hiện được công 1000J trong thời gian 5s. Kết luận nào sau đây là đúng?",o:["Máy thứ nhất có công suất lớn hơn máy thứ hai.","Máy thứ hai có công suất lớn hơn máy thứ nhất.","Hai máy có công suất hoạt động bằng nhau.","Chưa thể so sánh được công suất của hai máy."],a:1,e:""},
+{n:48,k:14,c:"V14",p:"v",q:"Câu 14. Một người dùng lực 150 N để kéo một chiếc xe di quãng đường 20 m theo phương của lực. Công của người đó thực hiện là:",o:["300 (J).","750 (J).","3.000 (J).","170 (J)."],a:2,e:""},
+{n:49,k:16,c:"V16",p:"v",q:"16. TN1 (Biết). Dụng cụ dùng đo thời gian trong thí nghiệm là gì?",o:["Đồng hồ bấm giây","Lực kế","Thước","Cân."],a:0,e:""},
+{n:50,k:17,c:"V17",p:"v",q:"17. TN2 (Hiểu). Vì sao phải ghi đơn vị khi trình bày số liệu đo?",o:["Để trang trí","Để xác định ý nghĩa giá trị đo","Để giảm số liệu","Để thay kết luận."],a:1,e:""},
+{n:51,k:18,c:"V18",p:"v",q:"18. TN3 (Hiểu). Khi kết quả đo giữa các lần khác nhau, cách xử lý phù hợp nhất là gì?",o:["Chọn số lớn nhất","Bỏ hết","Kiểm tra phép đo và tính giá trị trung bình khi thích hợp","Tự sửa số liệu."],a:2,e:""},
+{n:52,k:19,c:"V19",p:"v",q:"19. TN4 (Hiểu). Phần kết luận của báo cáo khoa học cần làm rõ điều gì?",o:["Màu dụng cụ","Giá thiết bị","Tên người mua","Kết quả rút ra từ dữ liệu."],a:3,e:""},
+{n:53,k:1,c:"S1",p:"s",q:"Câu 1: Di truyền là hiện tượng:",o:["con sinh ra có các đặc điểm khác với bố mẹ.","truyền đạt các tính trạng của bố mẹ, tổ tiên cho các thế hệ con cháu.","sinh vật có khả năng biến đổi hình thái để thích nghi với môi trường."],a:1,e:""},
+{n:54,k:2,c:"S2",p:"s",q:"Câu 2: Biến dị là hiện tượng:",o:["con sinh ra có các đặc điểm khác nhau và khác bố mẹ.","các thế hệ con cháu luôn giống hết bố mẹ về mọi mặt.","bố mẹ truyền toàn bộ tính trạng cho con mà không có sự thay đổi.","gene bị mất hoàn toàn ở thế hệ con cháu"],a:0,e:""},
+{n:55,k:3,c:"S3",p:"s",q:"Câu 3. Tính trạng tương phản là",o:["hai trạng thái khác nhau của cùng một tính trạng.","hai tính trạng giống nhau.","các tính trạng của hai loài khác nhau.","các tính trạng chỉ xuất hiện ở con đực."],a:0,e:""},
+{n:56,k:4,c:"S4",p:"s",q:"Câu 4. Ở chuột, lông đen (A) trội hoàn toàn so với lông nâu (a). Phép lai nào sau đây cho đời con có tỉ lệ phân li kiểu hình là 1 : 1?",o:["AA × aa.","Aa × aa.","Aa × Aa.","AA × AA."],a:1,e:""},
+{n:57,k:5,c:"S5",p:"s",q:"Câu 5: Ở một loài thực vật, alen A quy định thân cao trội hoàn toàn so với alen a quy định thân thấp. Cho cây thân cao dị hợp tự thụ phấn. Tỉ lệ kiểu gen ở đời con là:",o:["1 AA : 1 Aa.","3 AA : 1 aa.","1 AA : 2 Aa : 1 aa.","1 Aa : 1 aa."],a:2,e:""},
+{n:58,k:6,c:"S6",p:"s",q:"Câu 6. Quy luật phân ly của Mendel được giải thích dựa trên cơ sở tế bào học nào sau đây?",o:["Sự xuất hiện 1 kiểu gene ở F<span class=\"sub\">1</span> và tỉ lệ phân li 1: 2: 1 của đời F<span class=\"sub\">2</span> về kiểu gene.","Sự lấn át của gene trội đối với gene lặn.","Sự phân li của các cặp allele trong giảm phân hình thành giao tử và tổ hợp lại trong thụ tinh.","Khả năng tạo 2 loại giao tử của thể hệ ở F<span class=\"sub\">1</span>."],a:2,e:""},
+{n:59,k:7,c:"S7",p:"s",q:"Câu 7. Ở một loài hoa, gen A quy định hoa đỏ trội hoàn toàn so với alen a quy định hoa trắng. Cho cây hoa đỏ dị hợp tự thụ phấn. Theo lý thuyết, tỉ lệ kiểu hình ở đời con F<span class=\"sub\">1</span> là:",o:["100% hoa đỏ.","3 hoa đỏ : 1 hoa trắng.","1 hoa đỏ : 1 hoa trắng.","1 hoa đỏ : 2 hoa hồng : 1 hoa trắng."],a:1,e:""},
+{n:60,k:8,c:"S8",p:"s",q:"Câu 8. Ví dụ nào sau đây là một cặp tính trạng tương phản?",o:["Hoa đỏ và hoa trắng.","Hoa đỏ và hạt vàng.","Hạt tròn và hoa đỏ.","Thân cao và hạt vàng."],a:0,e:""},
+{n:61,k:9,c:"S9",p:"s",q:"Câu 9. Một người làm vườn mua được 1 lô cây hoa hồng đỏ rất đẹp. Vì hoa hồng đỏ tính trạng trội hoàn toàn so với hoa hồng trắng, người làm vườn muốn giữ lại những cây hoa hồng thuần chủng để làm giống cho mùa sau. Trong các phương pháp nào sau đây, giúp người làm vườn phân loại chính xác và nhanh nhất, các cây hoa hồng đỏ thuần chủng?",o:["Cho các cây hoa hồng tự thụ phấn, cây nào ở đời con 100% hoa hồng đỏ là thuần chủng","Dem lai các cây hoa hồng đỏ với hoa hồng trắng, cây nào ở đời con cho 100% cây hoa hồng đỏ là cây thuần chủng","Dem lai các cây hoa hồng đỏ với nhau, cặp nào cho đời con có cả hoa đỏ và hoa trắng thì 2 cây bố mẹ đó thuần chủng","Tiến hành thụ phấn nhân tạo giữa các cây hoa hồng đỏ với 1 số cây hoa hồng đỏ khác đã biết rõ kiểu gen dị hợp."],a:1,e:""},
+{n:62,k:10,c:"S10",p:"s",q:"Câu 10. Quá trình tái bản DNA diễn diễn ra bao nhiêu giai đoạn?",o:["2","3","4","5"],a:1,e:""},
+{n:63,k:11,c:"S11",p:"s",q:"Câu 11. Gene (gen) là",o:["một đoạn của phân tử DNA mang thông tin di truyền.","một loại protein trong tế bào.","một loại tế bào sinh dục.","một phân tử đường."],a:0,e:""},
+{n:64,k:12,c:"S12",p:"s",q:"Câu 12. Chức năng chủ yếu của DNA là",o:["lưu giữ, bảo quản và truyền đạt thông tin di truyền.","vận chuyển amino acid.","cấu tạo nên ribosome.","tổng hợp glucose."],a:0,e:""}
+];
+
+const LETTER = ["A","B","C","D"];
+const SUBJ={h:"HOÁ",v:"VẬT LÝ",s:"SINH"};
+
+const ESSAY=[
+{p:"h",t:"Câu 38. Hãy nêu tính chất hóa học kim loại tác dụng với oxygen. Viết phương trình hóa học xảy ra (+ Fe).",s:[{"h": "Đề bài", "x": "Câu 38. Hãy nêu tính chất hóa học kim loại tác dụng với oxygen. Viết phương trình hóa học xảy ra (+ Fe)."}, {"h": "Đáp án", "i": ["<b>Tính chất:</b> kim loại (chất khử) tác dụng với O₂ (chất oxi hóa) khi đun nóng, tạo thành <b>oxit base</b> — kim loại càng activ thì phản ứng càng mạnh.", "<b>Phương trình với Fe:</b> 3Fe + 2O<sub>2</sub> →(đun nóng) Fe<sub>3</sub>O<sub>4</sub>", "<b>Ví dụ khác:</b> 2Mg + O<sub>2</sub> →(nóng) 2MgO; 4Al + 3O<sub>2</sub> →(nóng) 2Al<sub>2</sub>O<sub>3</sub>; 2Cu + O<sub>2</sub> →(nóng) 2CuO", "<b>Vì sao:</b> kim loại dễ nhả electron (năng lượng ion hóa nhỏ) nên bị oxi hóa; O₂ nhận electron nên bị khử, hai phần tử kết hợp thành oxit."]}]},
+{p:"h",t:"Câu 39. Hòa tan một lượng iron (sắt) vào 400ml dung dịch HCl vừa đủ. Sau phản ứng thu được 2,479 lit khí hydrogen (đkc). Tìm nồng độ mol của dung dịch HCl đã dùng và thể tích khí H<span class=\"sub\">2</span> thu được ở điều kiện tiêu chuẩn.<br>Biết Fe = 56, H = 1, Cl = 35,5.",s:[{"h": "Đề bài", "x": "Câu 39. Hòa tan một lượng iron (sắt) vào 400ml dung dịch HCl vừa đủ. Sau phản ứng thu được 2,479 lit khí hydrogen (đkc). Tìm nồng độ mol của dung dịch HCl đã dùng và thể tích khí H<span class=\"sub\">2</span> thu được ở điều kiện tiêu chuẩn.<br>Biết Fe = 56, H = 1, Cl = 35,5."}, {"h": "Đáp án", "i": ["<b>Bước 1 – Viết phương trình:</b> Fe + 2HCl → FeCl₂ + H₂↑ (sắt phản ứng với HCl loãng, đây là phản ứng thay thế: kim loại activ hơn H thay H trong axit).", "<b>Bước 2 – Tính n(H₂) từ thể tích (ở đkc 1 mol khí = 22,4 L):</b>", "n(H₂) = V : 22,4 = 2,479 : 22,4 ≈ 0,1107 mol", "<b>Bước 3 – Suy ra n(HCl) theo tỉ lệ mol trong PTHH (1 Fe : 2 HCl : 1 H₂):</b>", "n(HCl) = 2 × n(H₂) = 2 × 0,1107 ≈ 0,2213 mol", "<b>Bước 4 – Tính nồng độ (c = n / V, V = 400 mL = 0,4 L):</b>", "c(HCl) = 0,2213 : 0,4 ≈ 0,55 mol/L", "<b>Bước 5 – Thể tích H₂ thu được ở đkc:</b> dữ liệu cho 2,479 L ở đkc nên V(H₂) = 2,479 L (không phải tính lại).", "Kết luận: c(HCl) ≈ 0,55 mol/L; V(H₂) = 2,479 L."]}]},
+{p:"h",t:"Câu 40. Hòa tan 6,5 gam kim loại zinc vào 200ml dung dịch HCl chưa rõ nồng độ<br>a. Tính nồng độ mol của dung dịch HCl đã dùng.<br>b. Tính thể tích khí thoát ra ở đkc.<br>Biết Zn = 65, H = 1, Cl = 35,5.",s:[{"h": "Đề bài", "x": "Câu 40. Hòa tan 6,5 gam kim loại zinc vào 200ml dung dịch HCl chưa rõ nồng độ<br>a. Tính nồng độ mol của dung dịch HCl đã dùng.<br>b. Tính thể tích khí thoát ra ở đkc.<br>Biết Zn = 65, H = 1, Cl = 35,5."}, {"h": "Đáp án", "i": ["<b>Bước 1 – Tính n(Zn) (M(Zn) = 65):</b>", "n(Zn) = m : M = 6,5 : 65 = 0,1 mol", "<b>Bước 2 – Viết phương trình:</b> Zn + 2HCl → ZnCl₂ + H₂↑ (kẽm activ hơn H nên thay H trong axit).", "<b>a) Tính c(HCl):</b> theo tỉ lệ mol 1 Zn : 2 HCl nên", "n(HCl) = 2 × n(Zn) = 2 × 0,1 = 0,2 mol", "c(HCl) = n : V = 0,2 : 0,2 = 1 mol/L (V = 200 mL = 0,2 L).", "<b>b) Tính V(H₂) ở đkc:</b> tỉ lệ 1 Zn : 1 H₂ nên n(H₂) = n(Zn) = 0,1 mol, suy ra", "V(H₂) = n × 22,4 = 0,1 × 22,4 = 2,24 L.", "Kết luận: c(HCl) = 1 mol/L; V(H₂) = 2,24 L."]}]},
+{p:"h",t:"Câu 41. Hãy nêu dây hoạt động hóa học của kim loại. Dựa vào dây hoạt động hóa học hãy cho biết dây hoạt động được sắp xếp dựa trên nguyên tắc nào?",s:[{"h": "Đề bài", "x": "Câu 41. Hãy nêu dây hoạt động hóa học của kim loại. Dựa vào dây hoạt động hóa học hãy cho biết dây hoạt động được sắp xếp dựa trên nguyên tắc nào?"}, {"h": "Đáp án", "i": ["<b>Dây hoạt động hóa học</b> là sự sắp xếp các kim loại theo chiều giảm dần khả năng khử (mức độ hoạt động) của chúng; kim loại nào đứng trước thì mạnh hơn, dễ bị oxi hóa hơn.", "Nguyên tắc sắp xếp: kim loại activ hơn (đứng trước) sẽ thay thế kim loại activ kém hơn (đứng sau) trong các dung dịch muối — phản ứng xảy ra vì kim loại activ hơn có năng lượng ion hóa nhỏ, dễ nhả electron hơn.", "Ví dụ: Fe + CuSO₄ → FeSO₄ + Cu (Fe đứng trước Cu nên chiếm chỗ Cu); nếu đặt ngược lại thì không phản ứng."]}]},
+{p:"h",t:"Câu 42. Cho các kim loại sau: (Mg, Al, Cu, Ag, Zn, Na).<br>a. Hãy sắp xếp các kim loại trên theo chiều mức độ hoạt động hóa học tăng dần.<br>b. Trong các kim loại trên, những kim loại nào tác dụng được với dung dịch acid loãng (như HCl, H<span class=\"sub\">2</span>SO<span class=\"sub\">4</span> loãng) giải phóng khí H<span class=\"sub\">2</span>.",s:[{"h": "Đề bài", "x": "Câu 42. Cho các kim loại sau: (Mg, Al, Cu, Ag, Zn, Na).<br>a. Hãy sắp xếp các kim loại trên theo chiều mức độ hoạt động hóa học tăng dần.<br>b. Trong các kim loại trên, những kim loại nào tác dụng được với dung dịch acid loãng (như HCl, H<span class=\"sub\">2</span>SO<span class=\"sub\">4</span> loãng) giải phóng khí H<span class=\"sub\">2</span>."}, {"h": "Đáp án", "i": ["<b>a)</b> Mức độ hoạt động tăng dần (từ activ kém nhất đến activ nhất), đọc theo dây hoạt động hóa học:", "<b>Ag &lt; Cu &lt; Zn &lt; Al &lt; Mg &lt; Na</b>", "Giải thích: đọc từ phải sang trái trong dãy kim loại → khả năng khử tăng dần (Na dễ mất electron nhất nên activ nhất, Ag khó mất electron nhất nên activ kém nhất).", "<b>b)</b> Kim loại nào tác dụng được với dung dịch axit loãng (HCl, H₂SO₄ loãng) phóng ra khí H₂? Đó là các kim loại <b>đứng trước H</b> trong dây hoạt động: <b>Mg, Al, Zn, Na</b> (vì chúng activ hơn H nên thay được H trong axit: Mg + 2HCl → MgCl₂ + H₂↑). Cu và Ag đứng sau H nên không phản ứng."]}]},
+{p:"h",t:"Câu 43. Có hiện tượng gì xảy ra khi nhúng một đinh sắt (Fe) sạch vào dung dịch copper (II) sulfate (CuSO<span class=\"sub\">4</span>). Giải thích",s:[{"h": "Đề bài", "x": "Câu 43. Có hiện tượng gì xảy ra khi nhúng một đinh sắt (Fe) sạch vào dung dịch copper (II) sulfate (CuSO<span class=\"sub\">4</span>). Giải thích"}, {"h": "Đáp án", "i": ["<b>Hiện tượng:</b> bề mặt đinh sắt phủ một lớp đồng màu đỏ; dung dịch từ màu xanh lam (của CuSO₄) nhạt dần, sau đó chuyển sang màu xanh lục nhạt (của FeSO₄).", "<b>Giải thích (vì sao):</b> Fe activ hơn Cu trong dây hoạt động hóa học (Fe dễ nhả electron hơn) nên Fe chiếm chỗ Cu trong dung dịch muối:", "Fe + CuSO₄ → FeSO₄ + Cu", "Fe bị oxi hóa thành Fe²⁺ (tan vào dung dịch – màu xanh lục), Cu²⁺ bị khử thành kim loại Cu (bám lên đinh – màu đỏ). Đặt đinh đồng vào FeSO₄ thì không phản ứng, vì Cu activ kém hơn Fe."]}]},
+{p:"h",t:"Câu 44: Em hãy giải thích vì sao khi tách nhôm ra khỏi aluminium oxide ta phải sử dụng phương pháp điện phân nóng chảy? Viết phương trình hóa học xảy ra.",s:[{"h": "Đề bài", "x": "Câu 44: Em hãy giải thích vì sao khi tách nhôm ra khỏi aluminium oxide ta phải sử dụng phương pháp điện phân nóng chảy? Viết phương trình hóa học xảy ra."}, {"h": "Đáp án", "i": ["<b>Vì sao phải điện phân nóng chảy:</b> Al₂O₃ có nhiệt độ nóng chảy rất cao (~2050 °C) và <b>không tan trong nước</b> nên không thể điện phân dung dịch (chỉ điện phân được chất tan chảy hoặc dung dịch)", "Al là kim loại hoạt động mạnh nên chỉ tách được bằng phương pháp điện phân nóng chảy Al₂O₃.", "<b>Phương trình:</b> 2Al₂O₃ →(điện phân, nóng chảy) 4Al + 3O₂↑", "(Al²⁺ nhận electron thành Al ở cực âm; O²⁻ nhả electron thành O₂ ở cực dương.)"]}]},
+{p:"h",t:"Câu 45: Em hãy giải thích vì sao trong thực tế, người ta thường sử dụng thép để xây dựng nhà cửa, cầu đường nhưng không dùng kim loại cơ bản là sắt?",s:[{"h": "Đề bài", "x": "Câu 45: Em hãy giải thích vì sao trong thực tế, người ta thường sử dụng thép để xây dựng nhà cửa, cầu đường nhưng không dùng kim loại cơ bản là sắt?"}, {"h": "Đáp án", "i": ["<b>Vì sao không dùng sắt thuần:</b> sắt thuần mềm, độ bền cơ học thấp và <b>dễ bị gỉ</b> — trong điều kiện ẩm ướt, sắt bị oxi hóa tạo thành gỉ (Fe₂O₃·xH₂O), dần mất độ bền.", "<b>Vì sao dùng thép:</b> thép là <b>hợp kim của sắt với carbon</b> (vài % C): carbon làm tăng độ cứng, độ bền cơ học", "đồng thời thép được pha thêm crôm, niken… nên chống gỉ tốt hơn nhiều.", "→ Do đó trong xây dựng nhà cửa, cầu đường người ta dùng thép chứ không dùng sắt thuần."]}]},
+{p:"h",t:"Câu 46: Phân biệt sự khác nhau cơ bản về nguyên tắc xuất gang và thép.",s:[{"h": "Đề bài", "x": "Câu 46: Phân biệt sự khác nhau cơ bản về nguyên tắc xuất gang và thép."}, {"h": "Đáp án", "i": ["<b>Gang (nguyên tắc: KHỬ — khử hoàn toàn oxit sắt):</b> trong lò cao, C và CO làm khử Fe₂O₃ ở nhiệt độ cao:", "Fe₂O₃ + 3CO → 2Fe + 3CO₂ (hoặc Fe₂O₃ + 3C → 2Fe + 3CO↑)", "Sản phẩm là gang lỏng — sắt lẫn nhiều carbon (2–4,5%) nên giòn, nóng chảy ở nhiệt độ thấp.", "<b>Thép (nguyên tắc: OXI HÓA — loại bớt carbon):</b> từ gang lỏng, thổi O₂ vào để oxi hóa bớt carbon và tạp chất:", "C + O₂ → CO₂ (carbon thừa bị cháy thành khí bay đi)", "→ được thép có carbon phù hợp (0,2–2,14%), bền, dẻo hơn gang.", "<b>Tóm lại: gang = khử oxit sắt; thép = oxi hóa bớt carbon trong gang.</b>"]}]},
+{p:"h",t:"Câu 47: Hãy so sánh tìm sự khác nhau về tính tính dẫn điện, nhiệt độ sôi và nhiệt độ nóng chảy giữa kim loại và phi kim.",s:[{"h": "Đề bài", "x": "Câu 47: Hãy so sánh tìm sự khác nhau về tính tính dẫn điện, nhiệt độ sôi và nhiệt độ nóng chảy giữa kim loại và phi kim."}, {"h": "Đáp án", "i": ["<b>1) Tính dẫn điện, dẫn nhiệt:</b>", "– Kim loại: dẫn điện, dẫn nhiệt <b>tốt</b> (do có electron tự do di chuyển được).", "– Phi kim: dẫn điện, dẫn nhiệt <b>rất kém</b> (trừ graphite — có cấu trúc tầng nên dẫn điện được).", "<b>2) Nhiệt độ nóng chảy:</b> kim loại thường <b>cao</b> (liên kết kim loại mạnh); phi kim thường <b>thấp hơn</b> (trừ C, Si, B — cấu trúc nguyên tử/các mạng lưới bền nên cao).", "<b>3) Nhiệt độ sôi:</b> kim loại thường <b>cao</b>; phi kim thường <b>thấp hơn kim loại</b> (trừ C không sôi ở áp suất thường, thăng hoa).", "→ Khác nhau cơ bản: kim loại dẫn điện/dẫn nhiệt tốt, nóng chảy và sôi cao; phi kim ngược lại (trừ một số ngoại lệ)."]}]},
+{p:"h",t:"Câu 48: Hãy giải thích tại sao phản ứng giữa kim loại và phi kim, phi kim thường nhận electron?",s:[{"h": "Đề bài", "x": "Câu 48: Hãy giải thích tại sao phản ứng giữa kim loại và phi kim, phi kim thường nhận electron?"}, {"h": "Đáp án", "i": ["<b>1) Kim loại cho electron:</b> kim loại có <b>năng lượng ion hóa nhỏ</b> → dễ nhả electron; khi nhả electron, kim loại bị oxi hóa và đóng vai trò <b>chất khử</b>.", "<b>2) Phi kim nhận electron:</b> phi kim có <b>ái điện tử lớn</b> (rất ham thêm electron) → dễ nhận electron", "khi nhận electron, phi kim bị khử và đạt cấu hình <b>octet 8 electron</b> ổn định như khí hiếm.", "<b>3) Ví dụ:</b> 2Na + Cl₂ → 2NaCl — Na nhả electron cho Cl; Cl nhận electron (đạt octet) nên bị khử.", "<b>Kết luận:</b> vì kim loại dễ cho electron còn phi kim rất dễ nhận electron, nên trong phản ứng kim loại – phi kim, <b>phi kim thường nhận electron</b> (phi kim là chất oxi hóa, kim loại là chất khử)."]}]},
+{p:"v",t:"Câu 7. Kéo vật nặng đến vị trí A ở độ cao h rồi thả nhẹ, vật nặng chuyển động đến vị trí thấp nhất O rồi tiếp tục đi lên, rồi dừng lại tại điểm B (Hình 3.2), rồi sau đó chuyển động ngược lại.<br>Em hãy trả lời các câu hỏi sau:<br>a. Có nhận xét gì về sự chuyển hóa giữa động năng và thế năng của vật nặng?<br>b. Vì sao sau một khoảng thời gian chuyển động, độ cao của vật nặng giảm dần?",s:[{"h": "Đề bài", "x": "Câu 7. Kéo vật nặng đến vị trí A ở độ cao h rồi thả nhẹ, vật nặng chuyển động đến vị trí thấp nhất O rồi tiếp tục đi lên, rồi dừng lại tại điểm B (Hình 3.2), rồi sau đó chuyển động ngược lại.<br>Em hãy trả lời các câu hỏi sau:<br>a. Có nhận xét gì về sự chuyển hóa giữa động năng và thế năng của vật nặng?<br>b. Vì sao sau một khoảng thời gian chuyển động, độ cao của vật nặng giảm dần?"}, {"h": "Đáp án", "i": ["<b>a) Phân tích theo từng đoạn (bỏ qua sức cản):</b>", "– A → O (rơi xuống): thế năng giảm ↔ động năng tăng — <b>thế năng chuyển thành động năng</b>; tại O: Ek lớn nhất, Ep nhỏ nhất.", "– O → B (lên cao): Ek giảm ↔ Ep tăng — <b>động năng chuyển thành thế năng</b>; tại đỉnh B: Ek = 0, Ep lớn nhất.", "– Tại A và B: vật đứng yên nên Ek = 0; Ec = Ek + Ep = không đổi (bỏ qua ma sát).", "<b>b) Vì sao độ cao tại B nhỏ hơn tại A?</b> vì có <b>sức cản không khí</b> làm hao mòn một phần cơ năng (chuyển thành nhiệt) nên Ec tại B &lt; Ec tại A → độ cao đạt được thấp hơn."]}]},
+{p:"v",t:"Câu 9. Một chiếc xe ô tô con có khối lượng m = 1200kg đang lưu thông trên đường cao tốc với tốc độ đều v = 20m/s. Tính động năng của chiếc xe ô tô đó.",s:[{"h": "Đề bài", "x": "Câu 9. Một chiếc xe ô tô con có khối lượng m = 1200kg đang lưu thông trên đường cao tốc với tốc độ đều v = 20m/s. Tính động năng của chiếc xe ô tô đó."}, {"h": "Đáp án", "i": ["<b>Công thức:</b> E<sub>k</sub> = ½mv²", "(m: khối lượng – kg; v: vận tốc – m/s; E<sub>k</sub> – J)", "<b>Vì sao dùng công thức này:</b> vật đang chuyển động có động năng; với cùng khối lượng, vận tốc càng lớn thì động năng càng tăng theo bình phương vận tốc.", "<b>Thay số:</b> m = 1200 kg, v = 20 m/s", "E<sub>k</sub> = ½ × 1200 × 20² = ½ × 1200 × 400 = 240 000 J = <b>2,4 × 10⁵ J</b>."]}]},
+{p:"v",t:"Câu 11.<br>a) Công suất là gì?<br>b) Viết công thức tính công suất. Chú thích rõ tên và đơn vị của các đại lượng có trong công thức.",s:[{"h": "Đề bài", "x": "Câu 11.<br>a) Công suất là gì?<br>b) Viết công thức tính công suất. Chú thích rõ tên và đơn vị của các đại lượng có trong công thức."}, {"h": "Đáp án", "i": ["<b>a) Công suất là gì?</b> Công suất là đại lượng đặc trưng cho <b>tốc độ làm việc</b> (tính nhanh chậm) của máy: máy nào thực hiện cùng một công mà dùng thời gian ngắn hơn thì công suất lớn hơn.", "<b>b) Công thức:</b> P = A / t", "– P: công suất, đơn vị oát (W)", "– A: công, đơn vị jun (J)", "– t: thời gian, đơn vị giây (s)", "Từ đó 1 W = 1 J/s (máy thực hiện 1 J mỗi giây).", "<b>Vì sao P = A/t:</b> vì công suất đo công làm được trên một đơn vị thời gian — cùng công A mà t nhỏ hơn thì P lớn hơn."]}]},
+{p:"v",t:"Câu 15. Một động cơ kéo một vật nặng chuyển động thẳng đều trên mặt phẳng ngang với lực kéo F = 200N. Trong thời gian 10s, vật di chuyển được quãng đường s = 5m theo hướng của lực kéo. Tính công suất của động cơ đó.",s:[{"h": "Đề bài", "x": "Câu 15. Một động cơ kéo một vật nặng chuyển động thẳng đều trên mặt phẳng ngang với lực kéo F = 200N. Trong thời gian 10s, vật di chuyển được quãng đường s = 5m theo hướng của lực kéo. Tính công suất của động cơ đó."}, {"h": "Đáp án", "i": ["<b>Bước 1 – Tính công của lực kéo (A = F·s, vì lực song song với quãng đường):</b>", "A = F × s = 200 × 5 = 1000 J", "<b>Bước 2 – Tính công suất (P = A/t):</b>", "P = 1000 : 10 = <b>100 W</b>", "(Giải thích: lực 200 N kéo đi 5 m thì làm công 1000 J; máy làm xong 1000 J đó trong 10 s nên mỗi giây làm 100 J → công suất 100 W.)"]}]},
+{p:"v",t:"20. TL1. Vật 2 kg chuyển động với tốc độ 3 m/s. Tính động năng.",s:[{"h": "Đề bài", "x": "20. TL1. Vật 2 kg chuyển động với tốc độ 3 m/s. Tính động năng."}, {"h": "Đáp án", "i": ["<b>Công thức:</b> E<sub>k</sub> = ½mv² (m: khối lượng – kg; v: vận tốc – m/s).", "Vật đang chuyển động nên có động năng; với m = 2 kg, v = 3 m/s:", "E<sub>k</sub> = ½ × 2 × 3² = ½ × 2 × 9 = <b>9 J</b>."]}]},
+{p:"v",t:"21. TL2. Vật 4 kg chuyển động với tốc độ 5 m/s. Tính động năng.",s:[{"h": "Đề bài", "x": "21. TL2. Vật 4 kg chuyển động với tốc độ 5 m/s. Tính động năng."}, {"h": "Đáp án", "i": ["<b>Công thức:</b> E<sub>k</sub> = ½mv².", "Thay m = 4 kg, v = 5 m/s:", "E<sub>k</sub> = ½ × 4 × 5² = ½ × 4 × 25 = <b>50 J</b>."]}]},
+{p:"v",t:"22. TL3. Một vật 3 kg ở độ cao 2 m so với mốc thế năng. Tính thế năng (g = 10 N/kg).",s:[{"h": "Đề bài", "x": "22. TL3. Một vật 3 kg ở độ cao 2 m so với mốc thế năng. Tính thế năng (g = 10 N/kg)."}, {"h": "Đáp án", "i": ["<b>Công thức:</b> E<sub>p</sub> = mgh (m: khối lượng – kg; g = 10 N/kg; h: độ cao – m).", "Vật ở độ cao 2 m nên có thế năng so với mốc:", "E<sub>p</sub> = 3 × 10 × 2 = <b>60 J</b>."]}]},
+{p:"v",t:"23. TL4. Vật 2 kg có thế năng 100 J. Tìm độ cao (g = 10 N/kg).",s:[{"h": "Đề bài", "x": "23. TL4. Vật 2 kg có thế năng 100 J. Tìm độ cao (g = 10 N/kg)."}, {"h": "Đáp án", "i": ["<b>Công thức:</b> E<sub>p</sub> = mgh ⇒ suy ra h = E<sub>p</sub> / (mg).", "Thay E<sub>p</sub> = 100 J, m = 2 kg, g = 10 N/kg:", "h = 100 : (2 × 10) = 100 : 20 = <b>5 m</b>."]}]},
+{p:"v",t:"24. TL5. Động năng của vật thay đổi thế nào nếu tốc độ tăng gấp đôi, khối lượng không đổi?",s:[{"h": "Đề bài", "x": "24. TL5. Động năng của vật thay đổi thế nào nếu tốc độ tăng gấp đôi, khối lượng không đổi?"}, {"h": "Đáp án", "i": ["<b>Công thức:</b> E<sub>k</sub> = ½mv² — với m không đổi thì E<sub>k</sub> tỉ lệ với <b>v²</b> (bình phương vận tốc).", "Nếu v → 2v thì E<sub>k</sub>' = ½m(2v)² = ½m × 4v² = 4 × (½mv²) = 4E<sub>k</sub>.", "<b>Kết luận:</b> động năng tăng <b>4 lần</b> (không phải 2 lần) vì phải bình phương vận tốc."]}]},
+{p:"v",t:"25. TL6. Hai vật có cùng tốc độ, vật thứ nhất nặng gấp ba vật thứ hai. So sánh động năng.",s:[{"h": "Đề bài", "x": "25. TL6. Hai vật có cùng tốc độ, vật thứ nhất nặng gấp ba vật thứ hai. So sánh động năng."}, {"h": "Đáp án", "i": ["<b>Công thức:</b> E<sub>k</sub> = ½mv² — với cùng v thì E<sub>k</sub> tỉ lệ thuận với m.", "m₁ = 3m₂ và v₁ = v₂ nên:", "E<sub>k1</sub> = ½(3m₂)v² = 3 × (½m₂v²) = 3E<sub>k2</sub>.", "<b>Kết luận:</b> vật nặng gấp 3 thì động năng <b>gấp 3 lần</b>."]}]},
+{p:"v",t:"26. TL1. Vật có động năng 40 J và thế năng 60 J. Tính cơ năng.",s:[{"h": "Đề bài", "x": "26. TL1. Vật có động năng 40 J và thế năng 60 J. Tính cơ năng."}, {"h": "Đáp án", "i": ["<b>Công thức:</b> E<sub>c</sub> = E<sub>k</sub> + E<sub>p</sub> (cơ năng = động năng + thế năng).", "Thay E<sub>k</sub> = 40 J, E<sub>p</sub> = 60 J:", "E<sub>c</sub> = 40 + 60 = <b>100 J</b>."]}]},
+{p:"v",t:"27. TL2. Vật có cơ năng 150 J, thế năng 90 J. Tính động năng.",s:[{"h": "Đề bài", "x": "27. TL2. Vật có cơ năng 150 J, thế năng 90 J. Tính động năng."}, {"h": "Đáp án", "i": ["<b>Công thức:</b> E<sub>c</sub> = E<sub>k</sub> + E<sub>p</sub> ⇒ E<sub>k</sub> = E<sub>c</sub> − E<sub>p</sub>.", "Thay E<sub>c</sub> = 150 J, E<sub>p</sub> = 90 J:", "E<sub>k</sub> = 150 − 90 = <b>60 J</b>."]}]},
+{p:"v",t:"28. TL3. Quả bóng được ném thẳng đứng lên cao, bỏ qua sức cản. Mô tả sự biến đổi động năng và thế năng.",s:[{"h": "Đề bài", "x": "28. TL3. Quả bóng được ném thẳng đứng lên cao, bỏ qua sức cản. Mô tả sự biến đổi động năng và thế năng."}, {"h": "Đáp án", "i": ["<b>Bỏ qua sức cản ⇒ E<sub>c</sub> = E<sub>k</sub> + E<sub>p</sub> = không đổi</b> — năng lượng chỉ chuyển đổi qua lại giữa động năng và thế năng.", "– <b>Đi lên:</b> độ cao tăng → E<sub>p</sub> tăng ↔ E<sub>k</sub> giảm (động năng chuyển thành thế năng); đến điểm cao nhất: E<sub>k</sub> = 0, E<sub>p</sub> lớn nhất.", "– <b>Rơi xuống:</b> độ cao giảm → E<sub>p</sub> giảm ↔ E<sub>k</sub> tăng (thế năng chuyển thành động năng); khi về điểm thấp nhất: E<sub>k</sub> lớn nhất, E<sub>p</sub> nhỏ nhất."]}]},
+{p:"v",t:"29. TL4. Vật rơi tự do, bỏ qua sức cản. Khi thế năng giảm 20 J, động năng biến đổi thế nào?",s:[{"h": "Đề bài", "x": "29. TL4. Vật rơi tự do, bỏ qua sức cản. Khi thế năng giảm 20 J, động năng biến đổi thế nào?"}, {"h": "Đáp án", "i": ["<b>Bỏ qua sức cản ⇒ cơ năng không đổi:</b> E<sub>c</sub> = E<sub>k</sub> + E<sub>p</sub> = hằng số.", "Khi thế năng giảm 20 J (ΔE<sub>p</sub> = −20 J), để tổng không đổi thì:", "ΔE<sub>k</sub> = −ΔE<sub>p</sub> = +20 J.", "<b>Kết luận:</b> động năng <b>tăng 20 J</b>."]}]},
+{p:"v",t:"30. TL5. Con lắc đi từ biên về vị trí thấp nhất. Nêu sự chuyển hoá năng lượng.",s:[{"h": "Đề bài", "x": "30. TL5. Con lắc đi từ biên về vị trí thấp nhất. Nêu sự chuyển hoá năng lượng."}, {"h": "Đáp án", "i": ["<b>Tại vị trí biên:</b> con lắc đứng yên (v = 0) ⇒ E<sub>k</sub> = 0, E<sub>p</sub> lớn nhất (chỉ có thế năng).", "<b>Đi từ biên về vị trí thấp nhất:</b> độ cao giảm ⇒ E<sub>p</sub> giảm ↔ E<sub>k</sub> tăng — <b>thế năng chuyển thành động năng</b>", "tại vị trí thấp nhất: E<sub>k</sub> lớn nhất, E<sub>p</sub> nhỏ nhất (bỏ qua sức cản thì E<sub>c</sub> không đổi)."]}]},
+{p:"v",t:"31. TL6. Vì sao con lắc dao động trong không khí có biên độ giảm dần?",s:[{"h": "Đề bài", "x": "31. TL6. Vì sao con lắc dao động trong không khí có biên độ giảm dần?"}, {"h": "Đáp án", "i": ["<b>Vì sao biên độ giảm dần:</b> khi con lắc dao động trong không khí, <b>sức cản không khí (ma sát)</b> luôn làm ngược chiều chuyển động → làm tiêu hao dần <b>cơ năng</b> của con lắc (chuyển thành nhiệt).", "Cơ năng giảm ⇒ độ cao đạt được mỗi lần qua biên giảm dần ⇒ <b>biên độ dao động giảm dần</b> (dao động tắt dần)."]}]},
+{p:"v",t:"32. TL1. Lực 50 N kéo vật đi 4 m theo hướng lực. Tính công.",s:[{"h": "Đề bài", "x": "32. TL1. Lực 50 N kéo vật đi 4 m theo hướng lực. Tính công."}, {"h": "Đáp án", "i": ["<b>Công thức:</b> A = F · s (F: lực – N; s: quãng đường – m; phương tiện lực và đường chuyển động cùng phương, ngược chiều thì A &lt; 0).", "Lực 50 N cùng hướng với quãng đường 4 m:", "A = 50 × 4 = <b>200 J</b>."]}]},
+{p:"v",t:"33. TL2. Lực 120 N đẩy xe đi 5 m theo hướng lực. Tính công.",s:[{"h": "Đề bài", "x": "33. TL2. Lực 120 N đẩy xe đi 5 m theo hướng lực. Tính công."}, {"h": "Đáp án", "i": ["<b>Công thức:</b> A = F · s (lực đẩy cùng hướng với chuyển động nên công dương).", "A = 120 × 5 = <b>600 J</b>."]}]},
+{p:"v",t:"34. TL3. Máy thực hiện công 900 J trong 30 s. Tính công suất.",s:[{"h": "Đề bài", "x": "34. TL3. Máy thực hiện công 900 J trong 30 s. Tính công suất."}, {"h": "Đáp án", "i": ["<b>Công thức:</b> P = A / t (P: công suất – W; A: công – J; t: thời gian – s).", "Thay A = 900 J, t = 30 s:", "P = 900 : 30 = <b>30 W</b> (mỗi giây máy làm được 30 J công)."]}]},
+{p:"v",t:"35. TL4. Người thực hiện công 1 200 J trong 2 phút. Tính công suất.",s:[{"h": "Đề bài", "x": "35. TL4. Người thực hiện công 1 200 J trong 2 phút. Tính công suất."}, {"h": "Đáp án", "i": ["<b>Bước 1 – Đổi đơn vị:</b> t = 2 phút = 2 × 60 = 120 s (công thức P = A/t yêu cầu t phải tính bằng giây).", "<b>Bước 2 – Tính công suất:</b>", "P = A / t = 1200 : 120 = <b>10 W</b>."]}]},
+{p:"v",t:"36. TL5. Động cơ có công suất 200 W hoạt động trong 15 s. Tính công.",s:[{"h": "Đề bài", "x": "36. TL5. Động cơ có công suất 200 W hoạt động trong 15 s. Tính công."}, {"h": "Đáp án", "i": ["<b>Công thức:</b> P = A/t ⇒ suy ra A = P · t.", "Thay P = 200 W, t = 15 s:", "A = 200 × 15 = <b>3000 J</b>."]}]},
+{p:"v",t:"37. TL6. Một máy có công suất 500 W thực hiện công 6 000 J. Tính thời gian.",s:[{"h": "Đề bài", "x": "37. TL6. Một máy có công suất 500 W thực hiện công 6 000 J. Tính thời gian."}, {"h": "Đáp án", "i": ["<b>Công thức:</b> P = A/t ⇒ suy ra t = A / P.", "Thay A = 6000 J, P = 500 W:", "t = 6000 : 500 = <b>12 s</b>."]}]},
+{p:"s",t:"Câu 13: Con sinh ra có nhiều đặc điểm giống bố mẹ là nhờ chức năng nào của phân tử DNA?",s:[{"h": "Đề bài", "x": "Câu 13: Con sinh ra có nhiều đặc điểm giống bố mẹ là nhờ chức năng nào của phân tử DNA?"}, {"h": "Đáp án", "i": ["<b>Chức năng:</b> DNA có chức năng <b>lưu giữ, bảo quản và truyền đạt thông tin di truyền</b>.", "<b>Giải thích (vì sao giống bố mẹ):</b> DNA mang các đoạn gọi là <b>gen</b> — mỗi gen mã hóa một tính trạng (màu hoa, hình dạng hạt…). Khi sinh sản, DNA tự nhân đôi rồi truyền nguyên vẹn cho con, nên con nhận nửa thông tin di truyền từ bố và nửa từ mẹ → các tính trạng giống bố mẹ. Nếu DNA không lưu trữ và sao chép được thông tin thì tính trạng không thể truyền từ đời này sang đời khác."]}]},
+{p:"s",t:"Câu 14. Giải thích vì sao chỉ từ bốn loại nucleotide tạo ra được sự đa dạng của phân tử DNA.",s:[{"h": "Đề bài", "x": "Câu 14. Giải thích vì sao chỉ từ bốn loại nucleotide tạo ra được sự đa dạng của phân tử DNA."}, {"h": "Đáp án", "i": ["<b>Thực tế:</b> DNA chỉ có 4 loại nucleotide: A (adenin), T (timin), G (guanin), C (xitozin).", "<b>Vì sao vẫn đa dạng:</b> sự đa dạng không do số loại nucleotide mà do <b>trình tự (thứ tự) sắp xếp</b> của chúng — với n nucleotide thì có 4ⁿ trình tự khác nhau. Ví dụ: ATGC, GTCA, TGAC… đều là chuỗi 4 nucleotide nhưng hoàn toàn khác nhau", "kéo dài hàng nghìn nucleotide thì số tổ hợp là vô cùng.", "Giống như chỉ có 26 mẫu tự mà viết được hàng triệu từ khác nhau — số lượng mẫu tự ít nhưng tổ hợp thứ tự là vô hạn."]}]},
+{p:"s",t:"Câu 15: Tỉnh huống: Một nông dân mua một cặp lợn giống đều có tai thẳng (tính trạng trội hoàn toàn) về nuôi. Ở lứa đẻ đầu tiên, cặp lợn này sinh được 4 lợn con, trong đó có 3 con tai thẳng và 1 con tai cụp (tính trạng lặn). Bác nông dân rất bất ngờ vì cả lợn bố và lợn mẹ đều tai thẳng nhưng lại sinh ra con tai cụp. Dựa vào cơ chế hình thành giao tử và tổ hợp giao tử trong quy luật phân li, em hãy: Xác định kiểu gen của cặp lợn bố mẹ nói trên.",s:[{"h": "Đề bài", "x": "Câu 15: Tỉnh huống: Một nông dân mua một cặp lợn giống đều có tai thẳng (tính trạng trội hoàn toàn) về nuôi. Ở lứa đẻ đầu tiên, cặp lợn này sinh được 4 lợn con, trong đó có 3 con tai thẳng và 1 con tai cụp (tính trạng lặn). Bác nông dân rất bất ngờ vì cả lợn bố và lợn mẹ đều tai thẳng nhưng lại sinh ra con tai cụp. Dựa vào cơ chế hình thành giao tử và tổ hợp giao tử trong quy luật phân li, em hãy: Xác định kiểu gen của cặp lợn bố mẹ nói trên."}, {"h": "Đáp án", "i": ["<b>Bước 1 – Suy luận alen:</b> lợn bố và lợn mẹ đều tai thẳng nhưng sinh ra lợn con tai cụp (tính trạng lặn). Tính trạng lặn chỉ biểu hiện khi có 2 alen lặn (kiểu gen aa) → mỗi con bố mẹ phải mang 1 alen lặn → cả bố và mẹ đều <b>dị hợp Aa</b> (kiểu gen Aa × Aa).", "<b>Bước 2 – Giao tử:</b> bố tạo giao tử A và a; mẹ tạo giao tử A và a.", "<b>Bước 3 – Bảng Punnett:</b>", "– A × A → AA (tai thẳng)", "– A × a → Aa (tai thẳng)", "– a × A → Aa (tai thẳng)", "– a × a → aa (tai cụp)", "<b>Bước 4 – Kết luận:</b> tỉ lệ tai thẳng : tai cụp = 3 : 1; khả năng mỗi lứa sinh ra lợn tai cụp = 1/4."]}]}
+];
+
+const FLA=[
+{n:1,c:"H1",p:"h",q:"Câu 38. Hãy nêu tính chất hóa học kim loại tác dụng với oxygen. Viết phương…",k:["Phương trình với Fe: 3Fe + 2O2 →(đun nóng) Fe3O4","Ví dụ khác: 2Mg + O2 →(nóng) 2MgO; 4Al + 3O2 →(nóng) 2Al2O3; 2Cu + O2 →(nóng) 2CuO","Vì sao: kim loại dễ nhả electron (năng lượng ion hóa nhỏ) nên bị oxi hóa; O₂ nhận electron nên bị khử, hai phần tử kết hợp thành oxit.","Tính chất: kim loại (chất khử) tác dụng với O₂ (chất oxi hóa) khi đun nóng, tạo thành oxit base — kim loại càng activ thì phản ứng càng mạnh."],tip:"Nhớ 4 ý chính – chi tiết ở tab Tự luận"},
+{n:2,c:"H2",p:"h",q:"Câu 39. Hòa tan một lượng iron (sắt) vào 400ml dung dịch HCl vừa đủ. Sau ph…",k:["Bước 1 – Viết phương trình: Fe + 2HCl → FeCl₂ + H₂↑ (sắt phản ứng với HCl loãng, đây là phản ứng thay thế: kim loại activ hơn H thay H trong axit).","Bước 2 – Tính n(H₂) từ thể tích (ở đkc 1 mol khí = 22,4 L):","n(H₂) = V : 22,4 = 2,479 : 22,4 ≈ 0,1107 mol","Bước 3 – Suy ra n(HCl) theo tỉ lệ mol trong PTHH (1 Fe : 2 HCl : 1 H₂):","n(HCl) = 2 × n(H₂) = 2 × 0,1107 ≈ 0,2213 mol","Bước 4 – Tính nồng độ (c = n / V, V = 400 mL = 0,4 L):","c(HCl) = 0,2213 : 0,4 ≈ 0,55 mol/L"],tip:"Nhớ 7 ý chính – chi tiết ở tab Tự luận"},
+{n:3,c:"H3",p:"h",q:"Câu 40. Hòa tan 6,5 gam kim loại zinc vào 200ml dung dịch HCl chưa rõ nồng …",k:["Bước 1 – Tính n(Zn) (M(Zn) = 65):","n(Zn) = m : M = 6,5 : 65 = 0,1 mol","Bước 2 – Viết phương trình: Zn + 2HCl → ZnCl₂ + H₂↑ (kẽm activ hơn H nên thay H trong axit).","a) Tính c(HCl): theo tỉ lệ mol 1 Zn : 2 HCl nên","n(HCl) = 2 × n(Zn) = 2 × 0,1 = 0,2 mol","c(HCl) = n : V = 0,2 : 0,2 = 1 mol/L (V = 200 mL = 0,2 L).","b) Tính V(H₂) ở đkc: tỉ lệ 1 Zn : 1 H₂ nên n(H₂) = n(Zn) = 0,1 mol, suy ra"],tip:"Nhớ 7 ý chính – chi tiết ở tab Tự luận"},
+{n:4,c:"H4",p:"h",q:"Câu 41. Hãy nêu dây hoạt động hóa học của kim loại. Dựa vào dây hoạt động h…",k:["Nguyên tắc sắp xếp: kim loại activ hơn (đứng trước) sẽ thay thế kim loại activ kém hơn (đứng sau) trong các dung dịch muối — phản ứng xảy ra vì kim…","Ví dụ: Fe + CuSO₄ → FeSO₄ + Cu (Fe đứng trước Cu nên chiếm chỗ Cu); nếu đặt ngược lại thì không phản ứng.","Dây hoạt động hóa học là sự sắp xếp các kim loại theo chiều giảm dần khả năng khử (mức độ hoạt động) của chúng; kim loại nào đứng trước thì mạnh hơ…"],tip:"Nhớ 3 ý chính – chi tiết ở tab Tự luận"},
+{n:5,c:"H5",p:"h",q:"Câu 42. Cho các kim loại sau: (Mg, Al, Cu, Ag, Zn, Na).a. Hãy sắp xếp các k…",k:["Giải thích: đọc từ phải sang trái trong dãy kim loại → khả năng khử tăng dần (Na dễ mất electron nhất nên activ nhất, Ag khó mất electron nhất nên …","b) Kim loại nào tác dụng được với dung dịch axit loãng (HCl, H₂SO₄ loãng) phóng ra khí H₂? Đó là các kim loại đứng trước H trong dây hoạt động: Mg,…","a) Mức độ hoạt động tăng dần (từ activ kém nhất đến activ nhất), đọc theo dây hoạt động hóa học:","Ag &lt; Cu &lt; Zn &lt; Al &lt; Mg &lt; Na"],tip:"Nhớ 4 ý chính – chi tiết ở tab Tự luận"},
+{n:6,c:"H6",p:"h",q:"Câu 43. Có hiện tượng gì xảy ra khi nhúng một đinh sắt (Fe) sạch vào dung d…",k:["Fe + CuSO₄ → FeSO₄ + Cu","Hiện tượng: bề mặt đinh sắt phủ một lớp đồng màu đỏ; dung dịch từ màu xanh lam (của CuSO₄) nhạt dần, sau đó chuyển sang màu xanh lục nhạt (của FeSO₄).","Giải thích (vì sao): Fe activ hơn Cu trong dây hoạt động hóa học (Fe dễ nhả electron hơn) nên Fe chiếm chỗ Cu trong dung dịch muối:","Fe bị oxi hóa thành Fe²⁺ (tan vào dung dịch – màu xanh lục), Cu²⁺ bị khử thành kim loại Cu (bám lên đinh – màu đỏ). Đặt đinh đồng vào FeSO₄ thì khô…"],tip:"Nhớ 4 ý chính – chi tiết ở tab Tự luận"},
+{n:7,c:"H7",p:"h",q:"Câu 44: Em hãy giải thích vì sao khi tách nhôm ra khỏi aluminium oxide ta p…",k:["Vì sao phải điện phân nóng chảy: Al₂O₃ có nhiệt độ nóng chảy rất cao (~2050 °C) và không tan trong nước nên không thể điện phân dung dịch (chỉ điện…","Phương trình: 2Al₂O₃ →(điện phân, nóng chảy) 4Al + 3O₂↑","Al là kim loại hoạt động mạnh nên chỉ tách được bằng phương pháp điện phân nóng chảy Al₂O₃.","(Al²⁺ nhận electron thành Al ở cực âm; O²⁻ nhả electron thành O₂ ở cực dương.)"],tip:"Nhớ 4 ý chính – chi tiết ở tab Tự luận"},
+{n:8,c:"H8",p:"h",q:"Câu 45: Em hãy giải thích vì sao trong thực tế, người ta thường sử dụng thé…",k:["Vì sao không dùng sắt thuần: sắt thuần mềm, độ bền cơ học thấp và dễ bị gỉ — trong điều kiện ẩm ướt, sắt bị oxi hóa tạo thành gỉ (Fe₂O₃·xH₂O), dần …","Vì sao dùng thép: thép là hợp kim của sắt với carbon (vài % C): carbon làm tăng độ cứng, độ bền cơ học","→ Do đó trong xây dựng nhà cửa, cầu đường người ta dùng thép chứ không dùng sắt thuần.","đồng thời thép được pha thêm crôm, niken… nên chống gỉ tốt hơn nhiều."],tip:"Nhớ 4 ý chính – chi tiết ở tab Tự luận"},
+{n:9,c:"H9",p:"h",q:"Câu 46: Phân biệt sự khác nhau cơ bản về nguyên tắc xuất gang và thép.",k:["Fe₂O₃ + 3CO → 2Fe + 3CO₂ (hoặc Fe₂O₃ + 3C → 2Fe + 3CO↑)","C + O₂ → CO₂ (carbon thừa bị cháy thành khí bay đi)","→ được thép có carbon phù hợp (0,2–2,14%), bền, dẻo hơn gang.","Tóm lại: gang = khử oxit sắt; thép = oxi hóa bớt carbon trong gang.","Gang (nguyên tắc: KHỬ — khử hoàn toàn oxit sắt): trong lò cao, C và CO làm khử Fe₂O₃ ở nhiệt độ cao:","Sản phẩm là gang lỏng — sắt lẫn nhiều carbon (2–4,5%) nên giòn, nóng chảy ở nhiệt độ thấp.","Thép (nguyên tắc: OXI HÓA — loại bớt carbon): từ gang lỏng, thổi O₂ vào để oxi hóa bớt carbon và tạp chất:"],tip:"Nhớ 7 ý chính – chi tiết ở tab Tự luận"},
+{n:10,c:"H10",p:"h",q:"Câu 47: Hãy so sánh tìm sự khác nhau về tính tính dẫn điện, nhiệt độ sôi và…",k:["→ Khác nhau cơ bản: kim loại dẫn điện/dẫn nhiệt tốt, nóng chảy và sôi cao; phi kim ngược lại (trừ một số ngoại lệ).","1) Tính dẫn điện, dẫn nhiệt:","– Kim loại: dẫn điện, dẫn nhiệt tốt (do có electron tự do di chuyển được).","– Phi kim: dẫn điện, dẫn nhiệt rất kém (trừ graphite — có cấu trúc tầng nên dẫn điện được).","2) Nhiệt độ nóng chảy: kim loại thường cao (liên kết kim loại mạnh); phi kim thường thấp hơn (trừ C, Si, B — cấu trúc nguyên tử/các mạng lưới bền n…","3) Nhiệt độ sôi: kim loại thường cao; phi kim thường thấp hơn kim loại (trừ C không sôi ở áp suất thường, thăng hoa)."],tip:"Nhớ 6 ý chính – chi tiết ở tab Tự luận"},
+{n:11,c:"H11",p:"h",q:"Câu 48: Hãy giải thích tại sao phản ứng giữa kim loại và phi kim, phi kim t…",k:["1) Kim loại cho electron: kim loại có năng lượng ion hóa nhỏ → dễ nhả electron; khi nhả electron, kim loại bị oxi hóa và đóng vai trò chất khử.","2) Phi kim nhận electron: phi kim có ái điện tử lớn (rất ham thêm electron) → dễ nhận electron","3) Ví dụ: 2Na + Cl₂ → 2NaCl — Na nhả electron cho Cl; Cl nhận electron (đạt octet) nên bị khử.","Kết luận: vì kim loại dễ cho electron còn phi kim rất dễ nhận electron, nên trong phản ứng kim loại – phi kim, phi kim thường nhận electron (phi ki…","khi nhận electron, phi kim bị khử và đạt cấu hình octet 8 electron ổn định như khí hiếm."],tip:"Nhớ 5 ý chính – chi tiết ở tab Tự luận"},
+{n:12,c:"V1",p:"v",q:"Câu 7. Kéo vật nặng đến vị trí A ở độ cao h rồi thả nhẹ, vật nặng chuyển độ…",k:["– A → O (rơi xuống): thế năng giảm ↔ động năng tăng — thế năng chuyển thành động năng; tại O: Ek lớn nhất, Ep nhỏ nhất.","– O → B (lên cao): Ek giảm ↔ Ep tăng — động năng chuyển thành thế năng; tại đỉnh B: Ek = 0, Ep lớn nhất.","– Tại A và B: vật đứng yên nên Ek = 0; Ec = Ek + Ep = không đổi (bỏ qua ma sát).","b) Vì sao độ cao tại B nhỏ hơn tại A? vì có sức cản không khí làm hao mòn một phần cơ năng (chuyển thành nhiệt) nên Ec tại B &lt; Ec tại A → độ cao…","a) Phân tích theo từng đoạn (bỏ qua sức cản):"],tip:"Nhớ 5 ý chính – chi tiết ở tab Tự luận"},
+{n:13,c:"V2",p:"v",q:"Câu 9. Một chiếc xe ô tô con có khối lượng m = 1200kg đang lưu thông trên đ…",k:["Công thức: Ek = ½mv²","Vì sao dùng công thức này: vật đang chuyển động có động năng; với cùng khối lượng, vận tốc càng lớn thì động năng càng tăng theo bình phương vận tốc.","Thay số: m = 1200 kg, v = 20 m/s","Ek = ½ × 1200 × 20² = ½ × 1200 × 400 = 240 000 J = 2,4 × 10⁵ J.","(m: khối lượng – kg; v: vận tốc – m/s; Ek – J)"],tip:"Nhớ 5 ý chính – chi tiết ở tab Tự luận"},
+{n:14,c:"V3",p:"v",q:"Câu 11.a) Công suất là gì?b) Viết công thức tính công suất. Chú thích rõ tê…",k:["b) Công thức: P = A / t","Từ đó 1 W = 1 J/s (máy thực hiện 1 J mỗi giây).","Vì sao P = A/t: vì công suất đo công làm được trên một đơn vị thời gian — cùng công A mà t nhỏ hơn thì P lớn hơn.","a) Công suất là gì? Công suất là đại lượng đặc trưng cho tốc độ làm việc (tính nhanh chậm) của máy: máy nào thực hiện cùng một công mà dùng thời gi…","– P: công suất, đơn vị oát (W)","– A: công, đơn vị jun (J)","– t: thời gian, đơn vị giây (s)"],tip:"Nhớ 7 ý chính – chi tiết ở tab Tự luận"},
+{n:15,c:"V4",p:"v",q:"Câu 15. Một động cơ kéo một vật nặng chuyển động thẳng đều trên mặt phẳng n…",k:["Bước 1 – Tính công của lực kéo (A = F·s, vì lực song song với quãng đường):","A = F × s = 200 × 5 = 1000 J","Bước 2 – Tính công suất (P = A/t):","P = 1000 : 10 = 100 W","(Giải thích: lực 200 N kéo đi 5 m thì làm công 1000 J; máy làm xong 1000 J đó trong 10 s nên mỗi giây làm 100 J → công suất 100 W.)"],tip:"Nhớ 5 ý chính – chi tiết ở tab Tự luận"},
+{n:16,c:"V5",p:"v",q:"20. TL1. Vật 2 kg chuyển động với tốc độ 3 m/s. Tính động năng.",k:["Công thức: Ek = ½mv² (m: khối lượng – kg; v: vận tốc – m/s).","Vật đang chuyển động nên có động năng; với m = 2 kg, v = 3 m/s:","Ek = ½ × 2 × 3² = ½ × 2 × 9 = 9 J."],tip:"Nhớ 3 ý chính – chi tiết ở tab Tự luận"},
+{n:17,c:"V6",p:"v",q:"21. TL2. Vật 4 kg chuyển động với tốc độ 5 m/s. Tính động năng.",k:["Công thức: Ek = ½mv².","Thay m = 4 kg, v = 5 m/s:","Ek = ½ × 4 × 5² = ½ × 4 × 25 = 50 J."],tip:"Nhớ 3 ý chính – chi tiết ở tab Tự luận"},
+{n:18,c:"V7",p:"v",q:"22. TL3. Một vật 3 kg ở độ cao 2 m so với mốc thế năng. Tính thế năng (g = …",k:["Công thức: Ep = mgh (m: khối lượng – kg; g = 10 N/kg; h: độ cao – m).","Ep = 3 × 10 × 2 = 60 J.","Vật ở độ cao 2 m nên có thế năng so với mốc:"],tip:"Nhớ 3 ý chính – chi tiết ở tab Tự luận"},
+{n:19,c:"V8",p:"v",q:"23. TL4. Vật 2 kg có thế năng 100 J. Tìm độ cao (g = 10 N/kg).",k:["Công thức: Ep = mgh ⇒ suy ra h = Ep / (mg).","Thay Ep = 100 J, m = 2 kg, g = 10 N/kg:","h = 100 : (2 × 10) = 100 : 20 = 5 m."],tip:"Nhớ 3 ý chính – chi tiết ở tab Tự luận"},
+{n:20,c:"V9",p:"v",q:"24. TL5. Động năng của vật thay đổi thế nào nếu tốc độ tăng gấp đôi, khối l…",k:["Công thức: Ek = ½mv² — với m không đổi thì Ek tỉ lệ với v² (bình phương vận tốc).","Nếu v → 2v thì Ek' = ½m(2v)² = ½m × 4v² = 4 × (½mv²) = 4Ek.","Kết luận: động năng tăng 4 lần (không phải 2 lần) vì phải bình phương vận tốc."],tip:"Nhớ 3 ý chính – chi tiết ở tab Tự luận"},
+{n:21,c:"V10",p:"v",q:"25. TL6. Hai vật có cùng tốc độ, vật thứ nhất nặng gấp ba vật thứ hai. So s…",k:["Công thức: Ek = ½mv² — với cùng v thì Ek tỉ lệ thuận với m.","m₁ = 3m₂ và v₁ = v₂ nên:","Ek1 = ½(3m₂)v² = 3 × (½m₂v²) = 3Ek2.","Kết luận: vật nặng gấp 3 thì động năng gấp 3 lần."],tip:"Nhớ 4 ý chính – chi tiết ở tab Tự luận"},
+{n:22,c:"V11",p:"v",q:"26. TL1. Vật có động năng 40 J và thế năng 60 J. Tính cơ năng.",k:["Công thức: Ec = Ek + Ep (cơ năng = động năng + thế năng).","Thay Ek = 40 J, Ep = 60 J:","Ec = 40 + 60 = 100 J."],tip:"Nhớ 3 ý chính – chi tiết ở tab Tự luận"},
+{n:23,c:"V12",p:"v",q:"27. TL2. Vật có cơ năng 150 J, thế năng 90 J. Tính động năng.",k:["Công thức: Ec = Ek + Ep ⇒ Ek = Ec − Ep.","Thay Ec = 150 J, Ep = 90 J:","Ek = 150 − 90 = 60 J."],tip:"Nhớ 3 ý chính – chi tiết ở tab Tự luận"},
+{n:24,c:"V13",p:"v",q:"28. TL3. Quả bóng được ném thẳng đứng lên cao, bỏ qua sức cản. Mô tả sự biế…",k:["Bỏ qua sức cản ⇒ Ec = Ek + Ep = không đổi — năng lượng chỉ chuyển đổi qua lại giữa động năng và thế năng.","– Đi lên: độ cao tăng → Ep tăng ↔ Ek giảm (động năng chuyển thành thế năng); đến điểm cao nhất: Ek = 0, Ep lớn nhất.","– Rơi xuống: độ cao giảm → Ep giảm ↔ Ek tăng (thế năng chuyển thành động năng); khi về điểm thấp nhất: Ek lớn nhất, Ep nhỏ nhất."],tip:"Nhớ 3 ý chính – chi tiết ở tab Tự luận"},
+{n:25,c:"V14",p:"v",q:"29. TL4. Vật rơi tự do, bỏ qua sức cản. Khi thế năng giảm 20 J, động năng b…",k:["Bỏ qua sức cản ⇒ cơ năng không đổi: Ec = Ek + Ep = hằng số.","Khi thế năng giảm 20 J (ΔEp = −20 J), để tổng không đổi thì:","ΔEk = −ΔEp = +20 J.","Kết luận: động năng tăng 20 J."],tip:"Nhớ 4 ý chính – chi tiết ở tab Tự luận"},
+{n:26,c:"V15",p:"v",q:"30. TL5. Con lắc đi từ biên về vị trí thấp nhất. Nêu sự chuyển hoá năng lượng.",k:["Tại vị trí biên: con lắc đứng yên (v = 0) ⇒ Ek = 0, Ep lớn nhất (chỉ có thế năng).","Đi từ biên về vị trí thấp nhất: độ cao giảm ⇒ Ep giảm ↔ Ek tăng — thế năng chuyển thành động năng","tại vị trí thấp nhất: Ek lớn nhất, Ep nhỏ nhất (bỏ qua sức cản thì Ec không đổi)."],tip:"Nhớ 3 ý chính – chi tiết ở tab Tự luận"},
+{n:27,c:"V16",p:"v",q:"31. TL6. Vì sao con lắc dao động trong không khí có biên độ giảm dần?",k:["Vì sao biên độ giảm dần: khi con lắc dao động trong không khí, sức cản không khí (ma sát) luôn làm ngược chiều chuyển động → làm tiêu hao dần cơ nă…","Cơ năng giảm ⇒ độ cao đạt được mỗi lần qua biên giảm dần ⇒ biên độ dao động giảm dần (dao động tắt dần)."],tip:"Nhớ 2 ý chính – chi tiết ở tab Tự luận"},
+{n:28,c:"V17",p:"v",q:"32. TL1. Lực 50 N kéo vật đi 4 m theo hướng lực. Tính công.",k:["Công thức: A = F · s (F: lực – N; s: quãng đường – m; phương tiện lực và đường chuyển động cùng phương, ngược chiều thì A &lt; 0).","A = 50 × 4 = 200 J.","Lực 50 N cùng hướng với quãng đường 4 m:"],tip:"Nhớ 3 ý chính – chi tiết ở tab Tự luận"},
+{n:29,c:"V18",p:"v",q:"33. TL2. Lực 120 N đẩy xe đi 5 m theo hướng lực. Tính công.",k:["Công thức: A = F · s (lực đẩy cùng hướng với chuyển động nên công dương).","A = 120 × 5 = 600 J."],tip:"Nhớ 2 ý chính – chi tiết ở tab Tự luận"},
+{n:30,c:"V19",p:"v",q:"34. TL3. Máy thực hiện công 900 J trong 30 s. Tính công suất.",k:["Công thức: P = A / t (P: công suất – W; A: công – J; t: thời gian – s).","Thay A = 900 J, t = 30 s:","P = 900 : 30 = 30 W (mỗi giây máy làm được 30 J công)."],tip:"Nhớ 3 ý chính – chi tiết ở tab Tự luận"},
+{n:31,c:"V20",p:"v",q:"35. TL4. Người thực hiện công 1 200 J trong 2 phút. Tính công suất.",k:["Bước 1 – Đổi đơn vị: t = 2 phút = 2 × 60 = 120 s (công thức P = A/t yêu cầu t phải tính bằng giây).","Bước 2 – Tính công suất:","P = A / t = 1200 : 120 = 10 W."],tip:"Nhớ 3 ý chính – chi tiết ở tab Tự luận"},
+{n:32,c:"V21",p:"v",q:"36. TL5. Động cơ có công suất 200 W hoạt động trong 15 s. Tính công.",k:["Công thức: P = A/t ⇒ suy ra A = P · t.","Thay P = 200 W, t = 15 s:","A = 200 × 15 = 3000 J."],tip:"Nhớ 3 ý chính – chi tiết ở tab Tự luận"},
+{n:33,c:"V22",p:"v",q:"37. TL6. Một máy có công suất 500 W thực hiện công 6 000 J. Tính thời gian.",k:["Công thức: P = A/t ⇒ suy ra t = A / P.","Thay A = 6000 J, P = 500 W:","t = 6000 : 500 = 12 s."],tip:"Nhớ 3 ý chính – chi tiết ở tab Tự luận"},
+{n:34,c:"S1",p:"s",q:"Câu 13: Con sinh ra có nhiều đặc điểm giống bố mẹ là nhờ chức năng nào của …",k:["Giải thích (vì sao giống bố mẹ): DNA mang các đoạn gọi là gen — mỗi gen mã hóa một tính trạng (màu hoa, hình dạng hạt…). Khi sinh sản, DNA tự nhân …","Chức năng: DNA có chức năng lưu giữ, bảo quản và truyền đạt thông tin di truyền."],tip:"Nhớ 2 ý chính – chi tiết ở tab Tự luận"},
+{n:35,c:"S2",p:"s",q:"Câu 14. Giải thích vì sao chỉ từ bốn loại nucleotide tạo ra được sự đa dạng…",k:["Vì sao vẫn đa dạng: sự đa dạng không do số loại nucleotide mà do trình tự (thứ tự) sắp xếp của chúng — với n nucleotide thì có 4ⁿ trình tự khác nha…","Thực tế: DNA chỉ có 4 loại nucleotide: A (adenin), T (timin), G (guanin), C (xitozin).","kéo dài hàng nghìn nucleotide thì số tổ hợp là vô cùng.","Giống như chỉ có 26 mẫu tự mà viết được hàng triệu từ khác nhau — số lượng mẫu tự ít nhưng tổ hợp thứ tự là vô hạn."],tip:"Nhớ 4 ý chính – chi tiết ở tab Tự luận"},
+{n:36,c:"S3",p:"s",q:"Câu 15: Tỉnh huống: Một nông dân mua một cặp lợn giống đều có tai thẳng (tí…",k:["Bước 1 – Suy luận alen: lợn bố và lợn mẹ đều tai thẳng nhưng sinh ra lợn con tai cụp (tính trạng lặn). Tính trạng lặn chỉ biểu hiện khi có 2 alen l…","Bước 2 – Giao tử: bố tạo giao tử A và a; mẹ tạo giao tử A và a.","Bước 3 – Bảng Punnett:","– A × A → AA (tai thẳng)","– A × a → Aa (tai thẳng)","– a × A → Aa (tai thẳng)","– a × a → aa (tai cụp)"],tip:"Nhớ 7 ý chính – chi tiết ở tab Tự luận"}
+];
+
+let filter="all", order=[], pos=0, ans={}, shuf=true, perm={}, flags={}, wrongSet=[];
+let mock=false, mans={}, mEnd=0, mStart=0, mTimer=null, mResult=null;
+const MOCK_MS=45*60*1000;
+try{ const s=JSON.parse(localStorage.getItem("khtn9")||"{}"); ans=s.ans||{}; perm=s.perm||{}; flags=s.flags||{}; if(s.shuf===false) shuf=false; }catch(e){}
+
+function pool(){
+  if(filter==="flag") return Q.filter(x=>flags[x.n]);
+  if(filter==="wrong") return Q.filter(x=>wrongSet.includes(x.n));
+  return Q.filter(x=>filter==="all"||x.p===filter);
+}
+function save(){ try{ localStorage.setItem("khtn9",JSON.stringify({ans,perm,shuf,flags})); }catch(e){} }
+
+function genPerm(L){ const p=[...Array(L).keys()]; for(let i=L-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[p[i],p[j]]=[p[j],p[i]];} return p; }
+function applyPerm(){ Q.forEach(x=>{ const L=x.o.length; if(!shuf){ perm[x.n]=[...Array(L).keys()]; } else if(!perm[x.n]||perm[x.n].length!==L){ perm[x.n]=genPerm(L); } }); }
+function getP(n){ const q=Q.find(x=>x.n===n), L=q?q.o.length:4; const p=perm[n]; return (p&&p.length===L)?p:[...Array(L).keys()]; }
+function updateShufChip(){
+  const c=document.getElementById("chipShuf");
+  c.classList.toggle("on",shuf);
+  c.innerHTML='<svg class="ic"><use href="#i-swap"/></svg>'+(shuf?"Trộn đáp án: BẬT":"Trộn đáp án: TẮT");
+}
+function toggleShuf(){
+  shuf=!shuf;
+  Q.forEach(x=>{ perm[x.n]= shuf?genPerm(x.o.length):[...Array(x.o.length).keys()]; });
+  save(); updateShufChip(); render();
+}
+
+function setFilter(f){
+  if(mock||mResult) return;
+  filter=f; pos=0;
+  document.querySelectorAll(".chip[data-f]").forEach(b=>b.classList.toggle("on",b.dataset.f===f));
+  updateExtraChips();
+  rebuildOrder(); render();
+}
+function updateExtraChips(){
+  const fc=Object.keys(flags).length;
+  const cf=document.getElementById("chipFlag");
+  cf.style.display = fc?"inline-flex":"none";
+  cf.innerHTML='<svg class="ic"><use href="#i-star"/></svg>Chưa chắc ('+fc+')';
+  cf.classList.toggle("on",filter==="flag");
+  const cw=document.getElementById("chipWrong");
+  cw.style.display = wrongSet.length?"inline-flex":"none";
+  cw.innerHTML='<svg class="ic"><use href="#i-x"/></svg>Làm sai ('+wrongSet.length+')';
+  cw.classList.toggle("on",filter==="wrong");
+}
+function toggleFlag(){
+  if(mock||mResult) return;
+  const n=order[pos];
+  if(flags[n]) delete flags[n]; else flags[n]=1;
+  save(); updateExtraChips(); render();
+}
+function rebuildOrder(){ order=pool().map(x=>x.n); }
+function shuffle(){
+  for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}
+  pos=0; render();
+}
+function resetQuiz(){
+  pool().forEach(x=>{ delete ans[x.n]; if(shuf) perm[x.n]=genPerm(x.o.length); });
+  save(); pos=0; rebuildOrder(); render();
+}
+function move(d){
+  if(d>0 && pos<order.length-1) pos++;
+  else if(d<0 && pos>0) pos--;
+  else if(d>0 && pos===order.length-1) pos=0;
+  render();
+}
+
+function fmt(ms){ const s=Math.max(0,Math.round(ms/1000)); return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0"); }
+function setChrome(mode){
+  document.getElementById("toolbar").style.display = mode==="normal" ? "" : "none";
+  document.getElementById("keybox").style.display = mode==="normal" ? "" : "none";
+  document.getElementById("qhint").style.display = mode==="normal" ? "" : "none";
+  document.getElementById("mockbar").classList.toggle("show", mode==="mock");
+}
+function startMock(){
+  clearInterval(mTimer); mTimer=null;
+  mock=true; mResult=null; mans={};
+  filter="all"; pos=0;
+  document.querySelectorAll(".chip[data-f]").forEach(b=>b.classList.toggle("on",b.dataset.f==="all"));
+  updateExtraChips();
+  order=Q.map(x=>x.n);
+  mEnd=Date.now()+MOCK_MS; mStart=Date.now();
+  mTimer=setInterval(tickMock,500);
+  render(); tickMock();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function tickMock(){
+  if(!mock||mResult) return;
+  const left=Math.max(0,mEnd-Date.now());
+  const el=document.getElementById("mockTime");
+  el.textContent=fmt(left);
+  el.classList.toggle("danger",left<=5*60*1000);
+  if(left<=0){ clearInterval(mTimer); mTimer=null; submitMock(true); }
+}
+function submitMock(force){
+  if(!mock) return;
+  const undone=order.length-Object.keys(mans).length;
+  if(!force && undone>0 && !confirm("Còn "+undone+" câu chưa chọn. Nộp bài?")) return;
+  clearInterval(mTimer); mTimer=null;
+  let score=0, wrong=[];
+  Q.forEach(x=>{ if(mans[x.n]===x.a) score++; else wrong.push(x.n); });
+  mResult={score,wrong,total:Q.length,spent:Date.now()-mStart};
+  render();
+}
+function showResult(){
+  setChrome("result");
+  const r=mResult, qc=document.getElementById("qcard");
+  qc.innerHTML='<div class="result">'+
+    '<div class="rtitle">Kết quả thi thử</div>'+
+    '<div class="rscore">'+r.score+'/'+r.total+'</div>'+
+    '<div class="rsub">Đúng '+r.score+' câu ('+Math.round(r.score/r.total*100)+'%) • sai '+(r.total-r.score)+' • dùng '+fmt(r.spent)+'</div>'+
+    (r.wrong.length
+      ? '<div class="rlist">'+r.wrong.map(x=>'<button class="rb" onclick="jumpWrong('+x+')">'+(Q.find(y=>y.n===x)||{c:x}).c+'</button>').join("")+'</div>'
+      : '<div class="rsub" style="color:var(--ok)">Tuyệt vời – không câu nào sai!</div>')+
+    '<div class="nav" style="margin-top:20px">'+
+      (r.wrong.length?'<button class="primary" onclick="reviewWrong()">Ôn '+r.wrong.length+' câu sai</button>':'')+
+      '<button onclick="startMock()">Thi lại</button>'+
+      '<button onclick="exitMock()">Về ôn thường</button>'+
+    '</div></div>';
+  qc.dataset.r="1";
+}
+function syncWrong(){
+  mResult.wrong.forEach(k=>{ if(mans[k]!==undefined) ans[k]=mans[k]; });
+  wrongSet=[...mResult.wrong];
+  mock=false; mResult=null; mans={};
+  clearInterval(mTimer); mTimer=null;
+  save();
+}
+function reviewWrong(){ syncWrong(); setFilter("wrong"); }
+function jumpWrong(n){
+  syncWrong();
+  filter="all";
+  document.querySelectorAll(".chip[data-f]").forEach(b=>b.classList.toggle("on",b.dataset.f==="all"));
+  updateExtraChips(); rebuildOrder();
+  pos=Math.max(0,order.indexOf(n));
+  render();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function exitMock(){
+  clearInterval(mTimer); mTimer=null;
+  mock=false; mResult=null; mans={}; wrongSet=[];
+  filter="all";
+  document.querySelectorAll(".chip[data-f]").forEach(b=>b.classList.toggle("on",b.dataset.f==="all"));
+  updateExtraChips(); rebuildOrder(); pos=0; render();
+}
+
+function render(){
+  const qc=document.getElementById("qcard");
+  if(qc.dataset.r && !mResult){ qc.innerHTML=QCARD; delete qc.dataset.r; }
+  if(mResult){ showResult(); return; }
+  if(mock){ renderMock(); return; }
+  setChrome("normal");
+  const list=pool();
+  if(!order.some(n=>list.some(x=>x.n===n))) rebuildOrder();
+  order=order.filter(n=>list.some(x=>x.n===n));
+  list.forEach(x=>{ if(!order.includes(x.n)) order.push(x.n); });
+  if(pos>=order.length) pos=0;
+
+  if(order.length===0){
+    document.getElementById("tag").textContent=""; document.getElementById("num").textContent="";
+    document.getElementById("pos").textContent="0 / 0";
+    document.getElementById("qq").textContent="Bộ lọc rỗng – hãy chọn “Tất cả” hoặc đánh dấu câu khác.";
+    document.getElementById("opts").innerHTML="";
+    document.getElementById("verdict").className="verdict"; document.getElementById("verdict").textContent="";
+    document.getElementById("expl").className="expl"; document.getElementById("expl").innerHTML="";
+    document.getElementById("flagbtn").style.display="none";
+    document.getElementById("bar").style.width="0%";
+    document.getElementById("stat").textContent="Không có câu nào";
+    return;
+  }
+
+  const n=order[pos], q=Q.find(x=>x.n===n);
+  document.getElementById("tag").textContent = SUBJ[q.p];
+  document.getElementById("tag").className = "tag "+q.p;
+  document.getElementById("num").textContent = "Câu "+q.k;
+  document.getElementById("pos").textContent = (pos+1)+" / "+order.length;
+  document.getElementById("qq").innerHTML = q.q;
+
+  const fb=document.getElementById("flagbtn");
+  fb.style.display="";
+  fb.classList.toggle("on",!!flags[n]);
+  fb.title = flags[n]?"Bỏ đánh dấu":"Đánh dấu câu chưa chắc";
+
+  const chosen = ans[n];
+  const p = getP(n);
+  const box=document.getElementById("opts"); box.innerHTML="";
+  p.forEach((oi,j)=>{
+    const b=document.createElement("button");
+    b.className="opt";
+    b.innerHTML="<b>"+LETTER[j]+".</b><span>"+q.o[oi]+"</span>";
+    if(chosen!==undefined){
+      b.disabled=true;
+      if(oi===q.a) b.classList.add("correct");
+      else if(oi===chosen) b.classList.add("wrong");
+    } else {
+      b.onclick=()=>{ ans[n]=oi; save(); render(); };
+    }
+    box.appendChild(b);
+  });
+
+  const v=document.getElementById("verdict");
+  const ex=document.getElementById("expl");
+  v.style.color="";
+  if(chosen!==undefined){
+    const ok = chosen===q.a;
+    const key = LETTER[p.indexOf(q.a)];
+    v.className="verdict "+(ok?"ok":"no");
+    v.innerHTML = ok ? '<svg class="ic"><use href="#i-check"/></svg> Chính xác! Đáp án đúng: '+key
+                     : '<svg class="ic"><use href="#i-x"/></svg> Chưa đúng. Đáp án đúng: '+key+' - '+q.o[q.a];
+    if(q.e){ ex.className="expl show";
+      ex.innerHTML='<svg class="ic"><use href="#i-bulb"/></svg> <b>Gợi ý:</b> '+q.e; }
+    else { ex.className="expl"; ex.innerHTML=""; }
+  } else { v.className="verdict"; v.textContent=""; ex.className="expl"; ex.innerHTML=""; }
+
+  const done=list.filter(x=>ans[x.n]!==undefined).length;
+  const right=list.filter(x=>ans[x.n]===x.a).length;
+  document.getElementById("bar").style.width=(done/list.length*100)+"%";
+  document.getElementById("stat").textContent =
+    "Đã làm "+done+"/"+list.length+"  •  Đúng "+right+(done?"  •  Tỷ lệ "+Math.round(right/done*100)+"%":"");
+
+  const kg=document.getElementById("keygrid"); kg.innerHTML="";
+  Q.forEach(x=>{
+    const b=document.createElement("button");
+    b.className="kb";
+    const key=LETTER[getP(x.n).indexOf(x.a)];
+    b.innerHTML=key+"<span>"+x.c+"</span>";
+    b.title=x.c+": "+key+" - "+x.o[x.a];
+    b.onclick=()=>{ jumpTo(x.n); };
+    kg.appendChild(b);
+  });
+}
+function renderMock(){
+  setChrome("mock");
+  const n=order[pos], q=Q.find(x=>x.n===n);
+  document.getElementById("tag").textContent=SUBJ[q.p];
+  document.getElementById("tag").className="tag "+q.p;
+  document.getElementById("num").textContent="Câu "+q.k;
+  document.getElementById("pos").textContent=(pos+1)+" / "+order.length;
+  document.getElementById("qq").innerHTML=q.q;
+  document.getElementById("flagbtn").style.display="none";
+
+  const picked=mans[n], p=getP(n);
+  const box=document.getElementById("opts"); box.innerHTML="";
+  p.forEach((oi,j)=>{
+    const b=document.createElement("button");
+    b.className="opt"+(picked===oi?" picked":"");
+    b.innerHTML="<b>"+LETTER[j]+".</b><span>"+q.o[oi]+"</span>";
+    if(picked===oi) b.style.borderColor="var(--acc2)", b.style.background="rgba(99,102,241,.10)";
+    b.onclick=()=>{ mans[n]=oi; renderMock(); };
+    box.appendChild(b);
+  });
+  const v=document.getElementById("verdict");
+  v.className="verdict"; v.style.color="var(--sub)";
+  v.textContent="Đang thi – không hiện đáp án, kết quả hiện sau khi nộp bài.";
+  const ex=document.getElementById("expl"); ex.className="expl"; ex.innerHTML="";
+
+  const done=Object.keys(mans).length;
+  document.getElementById("bar").style.width=(done/order.length*100)+"%";
+  document.getElementById("stat").textContent="Đã chọn "+done+"/"+order.length+" câu  •  bấm Nộp bài khi làm xong";
+}
+function jumpTo(n){
+  if(!order.includes(n)){
+    filter="all";
+    document.querySelectorAll(".chip[data-f]").forEach(b=>b.classList.toggle("on",b.dataset.f==="all"));
+    updateExtraChips(); rebuildOrder();
+  }
+  const i=order.indexOf(n); if(i>=0){ pos=i; render(); window.scrollTo({top:0,behavior:"smooth"}); }
+}
+
+function showTab(t){
+  ["q","e","k"].forEach(k=>{
+    document.getElementById("tab-"+k).classList.toggle("on",k===t);
+    document.getElementById("panel-"+k).classList.toggle("on",k===t);
+  });
+}
+
+const md=s=>s.replace(/\*\*(.+?)\*\*/g,"<b>$1</b>");
+function buildEssay(){
+  const el=document.getElementById("elist");
+  ESSAY.forEach(e=>{
+    const d=document.createElement("details");
+    d.className="essay";
+    let body="";
+    e.s.forEach(sec=>{
+      if(sec.h) body+='<h4>'+sec.h+'</h4>';
+      if(sec.x) body+='<p style="margin-bottom:4px">'+md(sec.x)+'</p>';
+      if(sec.i) body+='<ul>'+sec.i.map(x=>"<li>"+md(x)+"</li>").join("")+'</ul>';
+    });
+    d.innerHTML='<summary><span class="tag '+e.p+'">'+(SUBJ[e.p])+'</span><span>'+e.t+'</span></summary>'+
+      '<div class="body">'+body+'</div>';
+    el.appendChild(d);
+  });
+}
+function allEssay(open){ document.querySelectorAll(".essay").forEach(d=>d.open=open); }
+
+let fpos=0, fflip=false;
+function renderFlash(){
+  const f=FLA[fpos];
+  document.getElementById("fstat").textContent =
+    "Thẻ "+(fpos+1)+"/"+FLA.length+"  •  "+(SUBJ[f.p])+"  •  nhấn thẻ để lật";
+  document.getElementById("ffront").innerHTML =
+    '<div class="ftitle">'+(SUBJ[f.p])+' · THẺ '+(fpos+1)+' / '+FLA.length+'</div>'+
+    '<div class="fq">'+f.q+'</div>'+
+    '<div class="fhint">Nhấn vào thẻ (hoặc nút <svg class="ic"><use href="#i-flip"/></svg> Lật thẻ) để xem từ khóa trả lời</div>';
+  document.getElementById("fback").innerHTML =
+    '<div class="ftitle">TỪ KHÓA TRẢ LỜI</div>'+
+    '<ul class="k">'+f.k.map(x=>"<li>"+x+"</li>").join("")+'</ul>'+
+    '<div class="ftip"><svg class="ic"><use href="#i-bulb"/></svg> '+f.tip+'</div>';
+  document.getElementById("flash").classList.toggle("flip",fflip);
+  document.querySelectorAll(".qmini").forEach((b,i)=>b.classList.toggle("on",i===fpos));
+}
+function flip(){ fflip=!fflip; document.getElementById("flash").classList.toggle("flip",fflip); }
+function fmove(d){ fpos=(fpos+d+FLA.length)%FLA.length; fflip=false; renderFlash(); }
+function jumpF(i){ fpos=i; fflip=false; renderFlash(); window.scrollTo({top:0,behavior:"smooth"}); }
+function buildQgrid(){
+  const g=document.getElementById("qgrid");
+  FLA.forEach((f,i)=>{
+    const b=document.createElement("button");
+    b.className="qmini";
+    b.innerHTML='<span class="tag '+f.p+'">'+(SUBJ[f.p])+'</span>'+
+      '<h5>'+f.q+'</h5><ul>'+f.k.map(x=>"<li>"+x+"</li>").join("")+'</ul>'+
+      '<div class="mtip"><svg class="ic"><use href="#i-bulb"/></svg> '+f.tip+'</div>';
+    b.onclick=()=>jumpF(i);
+    g.appendChild(b);
+  });
+}
+
+const QCARD=document.getElementById("qcard").innerHTML;
+buildEssay(); buildQgrid(); applyPerm(); updateShufChip(); updateExtraChips(); rebuildOrder(); render(); renderFlash();
+document.addEventListener("keydown",e=>{
+  if(!document.getElementById("panel-q").classList.contains("on")) return;
+  if(e.key==="ArrowRight") move(1);
+  if(e.key==="ArrowLeft") move(-1);
+});
+</script>
+</body>
+</html>
